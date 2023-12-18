@@ -32,12 +32,12 @@ def process_image_with_vision(image_url, caption_image):
         return f"Error al procesar la imagen: {e}"
 
 # Define una función para buscar tendencias en Instagram basadas en una lista de palabras.
-def searchInstagramTrends(three_words): 
+def searchInstagramTrends(palabra): 
     # Inicializa una cadena para acumular resultados.
     result_string = ""
 
     # Convierte la cadena de entrada (tres palabras) en una lista.
-    three_word_list = literal_eval(three_words)
+    three_word_list = literal_eval(palabra)
 
     # Itera sobre cada palabra en la lista.
     for word in three_word_list:

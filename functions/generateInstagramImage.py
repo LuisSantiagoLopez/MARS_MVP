@@ -1,9 +1,15 @@
 from settings.settings import openaiclient, photoroomtoken
+from .find_most_recent_file import find_most_recent_file
 import requests
+import base64
+import os
+import ast
 from datetime import datetime 
 
 # esta función es la que produce una imagen de producto aceptable a partir de una mala imagen de producto.  
-def create_product_image(prompt,relative_image_path): 
+def create_product_image(prompt): 
+    
+    relative_image_path = find_most_recent_file("functions/product_pictures/product_pictures_raw/")
 
     url = "https://beta-sdk.photoroom.com/v1/instant-backgrounds" # el endpoint para generar imágenes de calidad
 
@@ -22,8 +28,8 @@ def create_product_image(prompt,relative_image_path):
 
     response = requests.post(url, headers=headers, files=files, data=data) # el post request al endpoint
 
-    date = datetime.now().strftime('%Y-%m-%d') # encontramos la fecha actual para nombrar a la imagen correcta 
-    file_path = f'product_pictures/product_pictures_corrected/{date}-corrected-product-image.png' # el path de la imagen correcta dentro de un folder destinado a ello 
+    date = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') # encontramos la fecha actual para nombrar a la imagen correcta 
+    file_path = f'functions/product_pictures/product_pictures_corrected/{date}-corrected-product-image.png' # el path de la imagen correcta dentro de un folder destinado a ello 
 
     if response.status_code == 200: # si el estatus de la llamada es igual a 200, entonces seguimos
         with open(file_path, 'wb') as corrected_image: # guardamos la imagen 
@@ -34,10 +40,17 @@ def create_product_image(prompt,relative_image_path):
         return 0
 
 # esta es la función original para crear imágenes. El punto es que el modelo ya haya produdido una idea que le mandará aquí como referencia para crear la imagen. 
-def generateInstagramImage(descripcion_de_negocio,idea,es_de_producto):
+def generateInstagramImage(idea,descripcion_negocio=0,estilo=0,es_de_producto=0,feedback=0):
+  
+  if es_de_producto != 0:
+    es_de_producto = ast.literal_eval(es_de_producto)
+
   if es_de_producto == True: # si la publicación es de producto, entonces empleamos photoroom para crear la nueva imagen. 
-    prompt = f"""Your task is to generate a prompt for a specific type of diffusion model that replaces background images for products. The image your prompt will produce will be used as an instagram post for the idea inside XML tags. Your prompt must summerise the elements of the idea into a simple stable-diffusion style prompt such as the following: "a bag on a magnificent display stand+, with many exquisite decorations+ around it-, creating an elegant and sophisticated atmosphere", if, for instance, the product advertised were a bag and the idea were to place the bag in a stand. Generate a unique prompt for each product and idea. Your prompt must be 15 words maximum. Do not include the XML tags in your response. 
+    prompt = f"""Your task is to generate a prompt for a specific type of diffusion model that replaces background images for products. The image your prompt will produce will be used as an instagram post for the idea inside XML tags. Your prompt must summerise the elements of the idea into a simple stable-diffusion style prompt with the following structure: the product on the image on the scenery or background. Do not include the XML tags in your response.
     <idea>{idea}<idea/>
+    {"<descripción_negocio>{descripcion_negocio}</descripción_negocio>" if descripcion_negocio !=0 else ""}
+    {"<feedback previo del usuario>{feedback}</feedback previo del usuario>" if feedback !=0 else ""}
+    {"<estilo>{estilo}</estilo>" if estilo!=0 else ""}
     """
 
     response = openaiclient.chat.completions.create( # mandamos el request al api de openai
@@ -47,24 +60,36 @@ def generateInstagramImage(descripcion_de_negocio,idea,es_de_producto):
       {"role": "user", "content": prompt},
     ]
   )
-    
-    response = response.choices[0].message.content
 
     if response:
+      response = response.choices[0].message.content
       product_pic_path = create_product_image(response)
-      return product_pic_path # devolvemos el path al corrected pic 
+      return product_pic_path 
 
   else: # si no es de producto 
-    prompt = f"""Tu tarea es generar una imagen con base a la idea dentro de las etiquetas XML. La imagen debe representar la idea para una publicación de instagram. Recuerda que los modelos de imagen a texto todavía no pueden generar texto de modo preciso, así que evita el texto en tu imagen. También considera la descripción y el estilo del instagram del negocio dentro de las etiquetas XML.
-    <estilo>{descripcion_de_negocio}<estilo/>
+    prompt = f"""Tu tarea es generar una imagen con base a la idea dentro de las etiquetas XML. La imagen debe representar la idea de modo creativo. Nunca sugieras o utilices texto en las imágenes. 
     <idea>{idea}<idea/>
+    {"<descripción_negocio>{descripcion_negocio}</descripción_negocio>" if descripcion_negocio !=0 else ""}
+    {"<feedback previo del usuario>{feedback}</feedback previo del usuario>" if feedback !=0 else ""}
+    {"<estilo>{estilo}</estilo>" if estilo!=0 else ""}
     """
 
-    image = openaiclient.images.generate( # dejamos que dalle produzca el prompt y la imagen 
+    image_response = openaiclient.images.generate( # dejamos que dalle produzca el prompt y la imagen 
       model="dall-e-3",
       prompt=f"{prompt}",
       n=1,
-      size="1024x1024"
+      size="1024x1024",
+      response_format = "b64_json"
     )
 
-    return image.data[0].url
+    # Esta funcionalidad es para guardar la imagen en vez de tenerla en un url, por el error que me encontré. En el MVP tendremos que guardar estas funciones en una función provisional en la nube. 
+    image_data = base64.b64decode(image_response.data[0].b64_json)
+
+    save_directory = 'functions/saved_images'
+
+    # Save the image to a file in the specified directory
+    file_path = os.path.join(save_directory, f'image-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.png')
+    with open(file_path, 'wb') as file:
+        file.write(image_data)
+
+    return file_path  # Return the local path to the saved image

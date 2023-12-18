@@ -1,6 +1,4 @@
-# dic 17 -> arregla estas funciones y corre el bot 
-
-scrapeUserWebsite = {
+scrapeUserWebsiteFunclist = {
     "type": "function",
     "function": {
         "name": "scrapeUserWebsite",
@@ -15,22 +13,22 @@ scrapeUserWebsite = {
     }
 }
 
-searchInstagramTrends = {
+searchInstagramTrendsFunclist = {
     "type": "function",
     "function": {
         "name": "searchInstagramTrends",
-        "description": "Descubre tendencias relevantes para el nicho del negocio del usuario en Instagram.",
+        "description": "Descubre publicaciones en tendencia en instagram dentro del nicho del usuario.",
         "parameters": {
             "type": "object",
             "properties": {
-                "tres_palabras": {"type": "string", "description": "Tres palabras generales y comunes relacionadas con el negocio del usuario dentro de una lista en python."}
+                "palabra": {"type": "string", "description": """Una palabra popular y común que represente el negocio del usuario dentro de una lista de python e.j.: '[palabra]'."""}
             },
             "required": ["tres_palabras"]
         }
     }
 }
 
-understandUserProduct = {
+understandUserProductFunclist = {
     "type": "function",
     "function": {
         "name": "understandUserProduct",
@@ -39,14 +37,13 @@ understandUserProduct = {
             "type": "object",
             "properties": {
                 "descripcion_negocio": {"type": "string", "description": "Una descripción del negocio del usuario."},
-                "url": {"type": "string", "description": "El url de su foto de producto."}
             },
-            "required": ["descripcion_negocio"]
+            "required": []
         }
     }
 }
 
-generateInstagramImage = {
+generateInstagramImageFunclist = {
     "type": "function",
     "function": {
         "name": "generateInstagramImage",
@@ -55,16 +52,17 @@ generateInstagramImage = {
             "type": "object",
             "properties": {
                 "descripcion_negocio": {"type": "string", "description": "Una descripción del negocio del usuario. Incluye una descripción de su negocio y el estilo de imagen que el usuario especificó."},
-                "idea": {"type": "string", "description": "La idea que el usuario aprobó."},
-                "es_de_producto": {"type": "boolean", "description": "True si el usuario quiere una publicación promocional y False si quiere crear una publicación de entretenimiento; para que este valor sea True tuviste que correr la función understandUserProduct previamente.", "enum": ["True","False"]},
+                "idea": {"type": "string", "description": "La idea de la imagen a generar."},
+                "es_de_producto": {"type": "boolean", "description": "True si el usuario quiere una publicación promocional y False si quiere crear una publicación de entretenimiento; Si utilizaste la función understandUserProduct previamente, y el usuario quiere hacer una publicación de su producto, indica True.", "enum": ["True","False"]},
+                "estilo": {"type": "string", "description": "El estilo del negocio, si no lo cononoces intúyelo."},
                 "feedback": {"type": "string", "description": "El feedback que dio el usuario de las imágenes pasadas."}
             },
-            "required": ["descripcion_negocio"]
+            "required": ["idea"]
         }
     }
 }
 
-generateInstagramCaption = {
+generateInstagramCaptionFunclist = {
     "type": "function",
     "function": {
         "name": "generateInstagramCaption",
@@ -75,14 +73,15 @@ generateInstagramCaption = {
                 "descripcion_negocio": {"type": "string", "description": "Una descripción del negocio del usuario. Incluye una descripción de su negocio y el estilo de escritura que el usuario especificó."},
                 "idea": {"type": "string", "description": "La idea que el usuario aprobó."},
                 "descripcion_imagen": {"type": "string", "description": "Una descripción de la imagen que el usuario aprobó."},
-                "feedback": {"type": "string", "description": "El feedback que dio el usuario de las captions pasadas."}
+                "feedback": {"type": "string", "description": "El feedback que dio el usuario de las captions pasadas."},
+                "estilo": {"type":"string", "description": "Estilo de escritura del negocio, si no lo especificó intúyelo."}
             },
-            "required": ["descripcion_negocio"]
+            "required": ["idea"]
         }
     }
 }
 
-uploadInstagramImage = {
+uploadInstagramImageFunclist = {
     "type": "function",
     "function": {
         "name": "uploadInstagramImage",

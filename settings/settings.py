@@ -7,9 +7,8 @@ from apify_client import ApifyClient
 
 load_dotenv()
 
-openaitoken = os.getenv("OPENAI_API_KEY")
 apifytoken = os.getenv("APIFY_TOKEN")
 photoroomtoken = os.getenv('PHOTOROOM_API_KEY')
 
-openaiclient = OpenAI(openaitoken)
+openaiclient = OpenAI()
 apifyclient = ApifyClient(apifytoken)
