@@ -10,6 +10,7 @@ from functions.understandUserProduct import understandUserProduct
 from functions.generateInstagramImage import generateInstagramImage
 from functions.generateInstagramCaption import generateInstagramCaption
 from settings.settings import openaiclient
+from cost_analyzer import calculate_message_tokens, calculate_function_io_tokens
 import time
 import json
 
@@ -66,11 +67,14 @@ while True:
         # If run is completed, get messages
         if run_status.status == 'completed':
             messages = openaiclient.beta.threads.messages.list(
-                thread_id=main_message_thread.id
+                thread_id=main_message_thread.id,
+                order="asc"
             )
 
+            calculate_message_tokens(assistant_main_content_creation, main_message_thread)
+
             # Loop through messages and print content based on role
-            for msg in reversed(messages.data):
+            for msg in messages.data:
                 role = msg.role
                 content = msg.content[0].text.value
                 print(f"{role.capitalize()}: {content}")
@@ -81,7 +85,7 @@ while True:
             required_actions = run_status.required_action.submit_tool_outputs.model_dump()
             print(required_actions)
             tool_outputs = []
-            import json
+            
             for action in required_actions["tool_calls"]:
                 
                 function_name = action['function']['name']
@@ -114,6 +118,9 @@ while True:
                 run_id=run.id,
                 tool_outputs=tool_outputs
             )
+
+            calculate_function_io_tokens(required_actions, output, assistant_main_content_creation)
+
         else:
             print("Waiting for the Assistant to process...")
             time.sleep(5)
