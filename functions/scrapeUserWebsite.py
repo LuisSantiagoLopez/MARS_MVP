@@ -1,4 +1,5 @@
 from settings.settings import apifyclient
+from cost_analysis.cost_analyzer import conversationCostCalculator
 
 def scrapeUserWebsite(url_negocio):
     # El json dentro del archivo "apify_run_input_page_scraping.txt" se lo vamos a entregar al actor de apify para que haga el scraping de la página web del usuario. En sentido práctico, le entregas un url, y el scraper extrae los elementos más importantes de la página web. 
@@ -71,6 +72,9 @@ def scrapeUserWebsite(url_negocio):
     # Extraemos el contenido al que le hicimos scraping. 
     for item in apifyclient.dataset(run["defaultDatasetId"]).iterate_items():
         website_content.append(str(item))
+
+    # Calcular costos de generar imagen con lightroom
+    conversationCostCalculator.apify_run_costs(run)
     
     website_content = ''.join(website_content)
 

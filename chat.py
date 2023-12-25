@@ -10,7 +10,7 @@ from functions.understandUserProduct import understandUserProduct
 from functions.generateInstagramImage import generateInstagramImage
 from functions.generateInstagramCaption import generateInstagramCaption
 from settings.settings import openaiclient
-from cost_analyzer import calculate_message_tokens, calculate_function_io_tokens
+from cost_analysis.cost_analyzer import conversationCostCalculator
 import time
 import json
 
@@ -71,7 +71,8 @@ while True:
                 order="asc"
             )
 
-            calculate_message_tokens(assistant_main_content_creation, main_message_thread)
+            # Calcular costos del asistente
+            conversationCostCalculator.calculate_assistant_tokens(assistant_main_content_creation,main_message_thread)
 
             # Loop through messages and print content based on role
             for msg in messages.data:
@@ -111,6 +112,9 @@ while True:
                         "tool_call_id": action['id'],
                         "output": output
                 })
+
+                # Contar costos de cada herramienta
+                conversationCostCalculator.calculate_function_io_tokens(function_arg,output,assistant_main_content_creation)
                 
             print("Submitting outputs back to the Assistant...")
             openaiclient.beta.threads.runs.submit_tool_outputs(
@@ -118,8 +122,7 @@ while True:
                 run_id=run.id,
                 tool_outputs=tool_outputs
             )
-
-            calculate_function_io_tokens(required_actions, output, assistant_main_content_creation)
+            
 
         else:
             print("Waiting for the Assistant to process...")

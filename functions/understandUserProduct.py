@@ -1,5 +1,6 @@
 from settings.settings import openaiclient
 from .find_most_recent_file import find_most_recent_file
+from cost_analysis.cost_analyzer import conversationCostCalculator
 import base64
 
 # el vision de openai solo acepta o un url del internet o una imagen base64. 
@@ -13,6 +14,8 @@ def understandUserProduct(descripcion_negocio=0):
     most_recent_image = find_most_recent_file("functions/product_pictures/product_pictures_raw")
     
     base64_image = encode_image(most_recent_image) # convertimos el la imagen en base64
+
+    model = "gpt-4-vision-preview"
 
     response = openaiclient.chat.completions.create(
     model="gpt-4-vision-preview",
@@ -34,6 +37,9 @@ def understandUserProduct(descripcion_negocio=0):
     ],
     max_tokens=300,
     )
+
+    # calcula costos de vision
+    conversationCostCalculator.calculate_chat_and_vision_tokens(response,model)
 
     # devolvemos respuesta del modelo
     return response.choices[0].message.content

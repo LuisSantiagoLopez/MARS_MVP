@@ -1,4 +1,5 @@
 from settings.settings import openaiclient, photoroomtoken
+from cost_analysis.cost_analyzer import conversationCostCalculator
 from .find_most_recent_file import find_most_recent_file
 import requests
 import base64
@@ -32,6 +33,8 @@ def create_product_image(prompt):
     file_path = f'functions/product_pictures/product_pictures_corrected/{date}-corrected-product-image.png' # el path de la imagen correcta dentro de un folder destinado a ello 
 
     if response.status_code == 200: # si el estatus de la llamada es igual a 200, entonces seguimos
+        # Calcular costos de generar imagen con lightroom
+        conversationCostCalculator.image_generation_costs("photoroom")
         with open(file_path, 'wb') as corrected_image: # guardamos la imagen 
             corrected_image.write(response.content)
         return file_path # regresamos el file path con el que el chatbot desplegará la imagen 
@@ -53,8 +56,10 @@ def generateInstagramImage(idea,descripcion_negocio=0,estilo=0,es_de_producto=0,
     {"<estilo>{estilo}</estilo>" if estilo!=0 else ""}
     """
 
+    model = "gpt-4-1106-preview"
+
     response = openaiclient.chat.completions.create( # mandamos el request al api de openai
-    model="gpt-4-1106-preview",
+    model=model,
     messages=[
       {"role": "system", "content": "Your job is to create prompts for diffusion models that create product images."},
       {"role": "user", "content": prompt},
@@ -62,6 +67,8 @@ def generateInstagramImage(idea,descripcion_negocio=0,estilo=0,es_de_producto=0,
   )
 
     if response:
+      # Calcular costos de gpt4
+      conversationCostCalculator.calculate_chat_and_vision_tokens(response,model)
       response = response.choices[0].message.content
       product_pic_path = create_product_image(response)
       return product_pic_path 
@@ -74,6 +81,8 @@ def generateInstagramImage(idea,descripcion_negocio=0,estilo=0,es_de_producto=0,
     {"<estilo>{estilo}</estilo>" if estilo!=0 else ""}
     """
 
+    model = "dall-e-3"
+
     image_response = openaiclient.images.generate( # dejamos que dalle produzca el prompt y la imagen 
       model="dall-e-3",
       prompt=f"{prompt}",
@@ -81,6 +90,9 @@ def generateInstagramImage(idea,descripcion_negocio=0,estilo=0,es_de_producto=0,
       size="1024x1024",
       response_format = "b64_json"
     )
+
+    # Calcular costos de gpt4
+    conversationCostCalculator.image_generation_costs(model)
 
     # Esta funcionalidad es para guardar la imagen en vez de tenerla en un url, por el error que me encontré. En el MVP tendremos que guardar estas funciones en una función provisional en la nube. 
     image_data = base64.b64decode(image_response.data[0].b64_json)

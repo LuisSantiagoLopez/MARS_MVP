@@ -17,7 +17,7 @@ searchInstagramTrendsFunclist = {
     "type": "function",
     "function": {
         "name": "searchInstagramTrends",
-        "description": "Descubre publicaciones en tendencia en instagram dentro del nicho del usuario.",
+        "description": "Encuentra y analiza publicaciones del nicho del usuario con más de 50 me gusta en instagram.",
         "parameters": {
             "type": "object",
             "properties": {
