@@ -59,6 +59,16 @@
     display: flex;
     flex-direction: column;
   }
+
+  .message-image img {
+    max-width: 50%; /* Adjust this value as needed */
+    max-height: 200px; /* Adjust this value as needed */
+    width: auto;
+    height: auto;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 </style>
 {% endblock %} {% block content %}
 <div class="chat-container">
@@ -72,23 +82,24 @@
     <div class="card-body messages-box">
       <ul class="list-unstyled messages-list">
 
-        <!-- <li class="message received">
+        <li class="message received">
           <div class="message-text">
             <div class="message-sender">
               <b>AI Chatbot</b>
             </div>
             <div class="message-content">
-              Hi {{user.username}}, I am your AI Chatbot, you can ask me anything.
+              Hola {{user.username}}, soy MARS, tu publicista digital. Chatea conmigo para comenzar a crear publicaciones para el Instagram de tu negocio.
             </div>
           </div>
-        </li>  -->
+        </li>
 
+        {% load static %}
         {% for chat in chats %}
           {% if chat.user == request.user %}  
             <li class="message sent">
               <div class="message-text">
                 <div class="message-sender">
-                  <b>You</b>
+                  <b>{{user.username}}</b>
                 </div>
                 <div class="message-content">
                   {{chat.message}}
@@ -96,16 +107,21 @@
               </div>
             </li> 
 
-            <li class="message recieved">
-              <div class="message-text">
+        <li class="message received">
+            <div class="message-text">
                 <div class="message-sender">
-                  <b>AI Chatbot</b>
+                    <b>MARS</b>
                 </div>
                 <div class="message-content">
-                  {{chat.response}}
+                    {{ chat.response }}
                 </div>
-              </div>
-            </li> 
+                {% if chat.image_path %}
+                    <div class="message-image">
+                        <img src={{chat.image_path.url}} alt="Image" style="max-width: 100%; height: auto;">
+                    </div>
+                {% endif %}
+            </div>
+        </li>
           {% endif %}
         {% endfor %}
       </ul>
@@ -162,11 +178,12 @@
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-        'message': message
+        'message': message,
       })
     })
       .then(response => response.json())
       .then(data => {
+        const image_path_url = data.image_path_url;
         const response = data.response;
         const messageItem = document.createElement('li');
         messageItem.classList.add('message', 'received');
@@ -180,7 +197,18 @@
             </div>
         </div>
           `;
+
+        if (image_path_url) {
+                const imageElement = document.createElement('img');
+                imageElement.classList.add('message-image')
+                imageElement.src = image_path_url;
+                imageElement.alt = "Image";
+                imageElement.style = "max-width: 100%; height: auto;";
+                messageItem.querySelector('.message-text').appendChild(imageElement);
+            }
+
         messagesList.appendChild(messageItem);
+        messagesList.scrollTop = messagesList.scrollHeight;
       });
   });
 
