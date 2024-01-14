@@ -15,11 +15,18 @@ assistant = Assistant()
 @login_required
 def chatbot(request):
     chats = Chat.objects.filter(user=request.user)
+
     if request.method == 'POST':
         message = request.POST.get("message")
+        user_input_image = request.FILES.get('image')
 
-        # Use the Assistant to get a response
-        data = json.loads(assistant.generate_assistant_response(message))
+        if user_input_image:
+            chat_image = Chat(user=request.user, user_input_image=user_input_image)
+            chat_image.save()
+            print(user_input_image)
+            print("THE IMAGE THE USER UPLOADED WAS SAVED")
+
+        data = json.loads(assistant.generate_assistant_response(message, request.user))
 
         print(data)
 
@@ -29,32 +36,18 @@ def chatbot(request):
         if instance_id is not None:
             instance_id = int(instance_id)
             chat = Chat.objects.get(id=instance_id)
-            chat.user = request.user
-            chat.message = message
-            chat.response = response
-            chat.created_at = timezone.now()
-            chat.save()
-
             image_path_url = chat.image_path.url
-
             print("IMAGE PATH URL: " + image_path_url)
         
         else:
-            chat = Chat(user=request.user, message=message, response=response, created_at=timezone.now())
-            chat.save()
-
+            chat = Chat(user=request.user)
             image_path_url = None
 
-        """
-        image_path = data.get('image_path', None)
-    
-        print(image_path)
+        chat.message = message
+        chat.response = response
+        chat.created_at = timezone.now()
 
-        # Save and respond with the generated response
-        chat = Chat(user=request.user, message=message, response=response, image_path=image_path, created_at=timezone.now())
         chat.save()
-        """
-
         return JsonResponse({"message": message, "response": response, "image_path_url": image_path_url})
 
     return render(request, "chatbot.html", {"chats": chats})

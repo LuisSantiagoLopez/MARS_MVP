@@ -69,13 +69,23 @@
     margin-top: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+.file-indicator {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 0.9em;
+  color: #888;
+  background: #f0f0f0;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
 </style>
 {% endblock %} {% block content %}
 <div class="chat-container">
   <div class="card flex-grow-1">
     <div class="card-header bg-primary text-white">Chat</div>
     {% if user.is_authenticated %}
-    <div class="card-header bg-primary text-white"><b>Welcome, {{user.username}}</b>           <a style="color: yellow" href="logout">Logout</a></div>
+    <div class="card-header bg-primary text-white"><b>Welcome, {{user.username}}</b>           <a style="color: yellow" href="{% url 'logout' %}">Logout</a></div>
     {% else %}
     <div class="card-header bg-primary text-white"><a href="login" style="color: yellow">Login</a>           <a style="color: yellow" href="register">Register</a></div>
     {% endif %}
@@ -93,55 +103,58 @@
           </div>
         </li>
 
-        {% load static %}
         {% for chat in chats %}
-          {% if chat.user == request.user %}  
+          {% if chat.user == request.user %}
             <li class="message sent">
               <div class="message-text">
                 <div class="message-sender">
-                  <b>{{user.username}}</b>
+                  <b>{{ user.username }}</b>
                 </div>
                 <div class="message-content">
-                  {{chat.message}}
+                  {{ chat.message }}
+                  {% if chat.user_input_image %}
+                    <div class="message-image">
+                      <img src="{{ chat.user_input_image.url }}" alt="Image" style="max-width: 100%; height: auto;">
+                    </div>
+                  {% endif %}
                 </div>
               </div>
-            </li> 
+            </li>
 
-        <li class="message received">
-            <div class="message-text">
+            <li class="message received">
+              <div class="message-text">
                 <div class="message-sender">
-                    <b>MARS</b>
+                  <b>MARS</b>
                 </div>
                 <div class="message-content">
-                    {{ chat.response }}
+                  {{ chat.response }}
                 </div>
                 {% if chat.image_path %}
-                    <div class="message-image">
-                        <img src={{chat.image_path.url}} alt="Image" style="max-width: 100%; height: auto;">
-                    </div>
+                  <div class="message-image">
+                    <img src="{{ chat.image_path.url }}" alt="Image" style="max-width: 100%; height: auto;">
+                  </div>
                 {% endif %}
-            </div>
-        </li>
+              </div>
+            </li>
           {% endif %}
         {% endfor %}
+
       </ul>
     </div>
     <br /><br />
     <br /><br />
     <br /><br />
   </div>
-  <form class="message-form">
-    {%csrf_token%}
-    <div class="input-group">
-      <input
-        type="text"
-        class="form-control message-input"
-        placeholder="Type your message..."
-      />
-      <div class="input-group-append">
-        <button type="submit" class="btn btn-primary btn-send">Send</button>
-      </div>
+  <form class="message-form" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="input-group">
+    <input type="file" id="file-input" name="image" style="display: none;" />
+    <label for="file-input" class="btn btn-secondary">📎</label>
+    <input type="text" class="form-control message-input" placeholder="Chatea con MARS..." name="message" />
+    <div class="input-group-append">
+      <button type="submit" class="btn btn-primary btn-send">Send</button>
     </div>
+  </div>
   </form>
 </div>
 
@@ -149,14 +162,32 @@
   const messagesList = document.querySelector('.messages-list');
   const messageForm = document.querySelector('.message-form');
   const messageInput = document.querySelector('.message-input');
+  const fileInput = document.querySelector('#file-input');
 
   messageForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
     const message = messageInput.value.trim();
+    const file = fileInput.files[0];
+
     if (message.length === 0) {
       return;
     }
+
+    // Clear the message input field
+    messageInput.value = '';
+    fileInput.value = '';
+
+    // Create FormData object and append message and file
+    let formData = new FormData();
+    formData.append('message', message);
+    if (file) {
+      formData.append('image', file);
+    }
+
+    // Append CSRF token to the FormData
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    formData.append('csrfmiddlewaretoken', csrfToken);
 
     const messageItem = document.createElement('li');
     messageItem.classList.add('message', 'sent');
@@ -169,17 +200,20 @@
                 ${message}
             </div>
         </div>`;
-    messagesList.appendChild(messageItem);
+    
+    if (file) {
+        const fileWidget = document.createElement('div');
+        fileWidget.className = 'file-indicator';
+        fileWidget.innerHTML = `📎 ${file.name}`;
+        messageItem.querySelector('.message-text').appendChild(fileWidget);
+    }
 
+    messagesList.appendChild(messageItem);
     messageInput.value = '';
 
     fetch('', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-        'message': message,
-      })
+      body: formData
     })
       .then(response => response.json())
       .then(data => {
@@ -199,18 +233,21 @@
           `;
 
         if (image_path_url) {
-                const imageElement = document.createElement('img');
-                imageElement.classList.add('message-image')
-                imageElement.src = image_path_url;
-                imageElement.alt = "Image";
-                imageElement.style = "max-width: 100%; height: auto;";
-                messageItem.querySelector('.message-text').appendChild(imageElement);
-            }
+            const imageWrapper = document.createElement('div');
+            imageWrapper.className = 'message-image';
+            const imageElement = document.createElement('img');
+            imageElement.src = image_path_url;
+            imageElement.alt = "Image";
+            imageWrapper.appendChild(imageElement);
+            messageItem.querySelector('.message-text').appendChild(imageWrapper);
+        }
+
 
         messagesList.appendChild(messageItem);
         messagesList.scrollTop = messagesList.scrollHeight;
       });
   });
+
 
 </script>
 

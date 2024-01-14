@@ -7,4 +7,5 @@ class Chat(models.Model):
     message = models.TextField(null=True, blank=True) 
     response = models.TextField(null=True, blank=True)
     image_path = models.ImageField(null=True, blank=True, upload_to="core_functions_mars/functions/saved_images")
+    user_input_image = models.ImageField(null=True, blank=True, upload_to="core_functions_mars/functions/downloaded_images")
     created_at = models.DateField(auto_now_add=True)
