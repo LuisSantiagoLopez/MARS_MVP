@@ -1,4 +1,9 @@
-{% extends 'base.html' %} {% block styles %}
+{% extends 'base.html' %} 
+
+{% block container_classes %}full-width-container{% endblock %}
+
+{% block styles %}
+
 <style>
   body,
   html {
@@ -6,8 +11,9 @@
   }
 
   .messages-box {
-    flex: 1;
     overflow-y: auto;
+    flex-grow: 1; /* Allows the box to expand to fill available space */
+    margin-bottom: 10px; /* Adjust as needed */
   }
 
   .messages-list {
@@ -55,9 +61,16 @@
   }
 
   .chat-container {
-    height: 100%;
+    width: 100%; /* Ensures full width of the viewport or parent element */
+    height: 100vh; /* Ensures full height of the viewport */
     display: flex;
     flex-direction: column;
+  }
+
+  .full-width-container {
+    max-width: none;
+    padding: 0;
+    margin: 0 auto;
   }
 
   .message-image img {
@@ -80,22 +93,19 @@
   border-radius: 4px;
 }
 </style>
-{% endblock %} {% block content %}
-<div class="chat-container">
+{% endblock %} 
+{% block title %}Chat{% endblock %}
+{% block content %}
+<div class="chat-container override-container">
   <div class="card flex-grow-1">
-    <div class="card-header bg-primary text-white">Chat</div>
-    {% if user.is_authenticated %}
-    <div class="card-header bg-primary text-white"><b>Welcome, {{user.username}}</b>           <a style="color: yellow" href="{% url 'logout' %}">Logout</a></div>
-    {% else %}
-    <div class="card-header bg-primary text-white"><a href="login" style="color: yellow">Login</a>           <a style="color: yellow" href="register">Register</a></div>
-    {% endif %}
+
     <div class="card-body messages-box">
       <ul class="list-unstyled messages-list">
 
         <li class="message received">
           <div class="message-text">
             <div class="message-sender">
-              <b>AI Chatbot</b>
+              <b>MARS</b>
             </div>
             <div class="message-content">
               Hola {{user.username}}, soy MARS, tu publicista digital. Chatea conmigo para comenzar a crear publicaciones para el Instagram de tu negocio.
