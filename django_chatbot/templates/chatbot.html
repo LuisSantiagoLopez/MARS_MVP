@@ -10,10 +10,79 @@
     height: 100%;
   }
 
-  .messages-box {
+  .sidebar {
+    width: 300px;
+    background: #f4f4f4;
+    border-right: 1px solid #ddd;
+    flex-shrink: 0; /* Prevents the sidebar from shrinking */
+  }
+
+  /* Added styles for the close button */
+  .sidebar-close button {
+    display: block; /* Make the button take its own line */
+    width: 100%; /* Stretch the button to the full width of the sidebar */
+    padding: 10px; /* Add some padding for better touch */
+    border: none; /* Remove the default button border */
+    background: #ccc; /* A light grey background for the button */
+    cursor: pointer; /* Change the cursor to pointer when hovering over the button */
+  }
+
+  /* Adjust the chat container to be a flex container */
+  .chat-container {
+    display: flex;
+    height: 100%;
+  }
+
+  .card.flex-grow-1 {
+  flex-grow: 1; /* Allows the chat box to grow and fill available space */
+  flex-basis: 0; /* Resets the default starting size to 0 */
+  overflow: hidden; /* Prevents content from overflowing the chat box */
+  }
+
+  /* Style for chat session items */
+  .session-item {
+  padding: 10px;
+  display: flex; /* Enable flexbox layout */
+  justify-content: space-between; /* Space between session text and delete icon */
+  align-items: center; /* Center items vertically */
+  }
+
+  .session-item:hover {
+    background: #e9e9e9;
+  }
+
+  .session-item:hover .delete-session {
+  display: inline; /* Show on hover */
+  } 
+
+  .delete-session {
+  display: none; /* Hide by default */
+  cursor: pointer; /* Change cursor on hover */
+  }
+
+  #reopen-sidebar {
+  position: fixed; /* Or absolute, depending on your layout */
+  top: 50%; /* Middle of the screen vertically */
+  left: 0; /* At the left edge, adjust as needed */
+  transform: translateY(-50%); /* Center it vertically */
+  background: #007bff; /* Match your theme or use a neutral color */
+  color: white; /* Icon color */
+  padding: 5px 10px; /* Small padding */
+  border-radius: 0 5px 5px 0; /* Rounded corners on the right side */
+  font-size: 20px; /* Adjust size as needed */
+  z-index: 1000; /* Ensure it's above other content */
+  }
+
+  .chat-messages {
+    height: calc(100vh - 150px);
     overflow-y: auto;
-    flex-grow: 1; /* Allows the box to expand to fill available space */
-    margin-bottom: 10px; /* Adjust as needed */
+    }
+
+  .messages-box {
+    flex-grow: 1;
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-bottom: 10px; /* Add padding to space out messages from the form */
+    margin-bottom: 50px; /* Adjust this to the height of your message form */
   }
 
   .messages-list {
@@ -60,13 +129,6 @@
     border-radius: 0;
   }
 
-  .chat-container {
-    width: 100%; /* Ensures full width of the viewport or parent element */
-    height: 100vh; /* Ensures full height of the viewport */
-    display: flex;
-    flex-direction: column;
-  }
-
   .full-width-container {
     max-width: none;
     padding: 0;
@@ -96,9 +158,26 @@
 {% endblock %} 
 {% block title %}Chat{% endblock %}
 {% block content %}
-<div class="chat-container override-container">
-  <div class="card flex-grow-1">
+<div class="chat-container">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-close">
+      <button onclick="toggleSidebar()">Close</button>
+    </div>
+    <div class="session-item" onclick="createSession()">New Chat +</div>
+    {% for session in chat_sessions %}
+      <div class="session-item" onclick="changeSession('{{ session.id }}')">
+        Chat {{ session.id }}
+        <span class="delete-session" onclick="deleteSession(event, '{{ session.id }}')">&#x1F5D1;</span> <!-- Trash can icon -->
+      </div>
+    {% endfor %}
+  </div>
 
+  <!-- Arrow Icon for Reopening Sidebar -->
+  <div id="reopen-sidebar" onclick="toggleSidebar()" style="cursor: pointer; display: none;">
+    &#9654; <!-- Unicode right-pointing triangle, you can replace it with an icon -->
+  </div>
+
+  <div class="card flex-grow-1">
     <div class="card-body messages-box">
       <ul class="list-unstyled messages-list">
 
@@ -114,7 +193,7 @@
         </li>
 
         {% for chat in chats %}
-          {% if chat.user == request.user %}
+          {% if chat.chat_session.user == request.user %}
             <li class="message sent">
               <div class="message-text">
                 <div class="message-sender">
@@ -150,10 +229,8 @@
         {% endfor %}
 
       </ul>
+
     </div>
-    <br /><br />
-    <br /><br />
-    <br /><br />
   </div>
   <form class="message-form" enctype="multipart/form-data">
   {% csrf_token %}
@@ -169,24 +246,75 @@
 </div>
 
 <script>
-  const messagesList = document.querySelector('.messages-list');
-  const messageForm = document.querySelector('.message-form');
-  const messageInput = document.querySelector('.message-input');
-  const fileInput = document.querySelector('#file-input');
+  const baseUrl = '/chatbot/';
+  const currentPath = window.location.pathname;
+  const pathSegments = currentPath.split('/').filter(Boolean); // Split by '/' and remove any empty strings
 
-  messageForm.addEventListener('submit', (event) => {
+  // Assume the session ID is the last segment in the URL path, if present
+  const currentSessionId = pathSegments.length > 1 ? pathSegments[pathSegments.length - 1] : null;
+  const fetchUrl = baseUrl + (currentSessionId ? `${currentSessionId}/` : "");
+
+  const messages_list = document.querySelector('.messages-list');
+  const message_form = document.querySelector('.message-form');
+  const message_input = document.querySelector('.message-input');
+  const file_input = document.querySelector('#file-input');
+
+  function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const reopenSidebar = document.getElementById('reopen-sidebar');
+
+  if (sidebar.style.display === 'none') {
+    sidebar.style.display = 'block';
+    reopenSidebar.style.display = 'none'; // Hide arrow when sidebar is open
+  } else {
+    sidebar.style.display = 'none';
+    reopenSidebar.style.display = 'flex'; // Show arrow when sidebar is closed
+  }
+  }
+
+  function deleteSession(event, sessionId) {
+  event.stopPropagation(); // Prevent the session change action
+
+  // Get the CSRF token from a cookie
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  // Directly send the request to delete the session, including the CSRF token in the request headers
+  fetch(`/delete-session/${sessionId}/`, {
+    method: 'DELETE',
+    headers: {
+      'X-CSRFToken': csrfToken // Include CSRF token in the request header
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      window.location.reload(); // Reload the page to update the session list
+    } else {
+      console.error('Error deleting session:', response.statusText);
+    }
+  });
+  }
+
+  function changeSession(session_id) {
+    window.location.href = `${baseUrl}${session_id}/`;
+  }
+
+  function createSession() {
+    window.location.href = baseUrl;
+  }
+
+  message_form.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    const message = messageInput.value.trim();
-    const file = fileInput.files[0];
+    const message = message_input.value.trim();
+    const file = file_input.files[0];
 
     if (message.length === 0) {
       return;
     }
 
     // Clear the message input field
-    messageInput.value = '';
-    fileInput.value = '';
+    message_input.value = '';
+    file_input.value = '';
 
     // Create FormData object and append message and file
     let formData = new FormData();
@@ -218,20 +346,21 @@
         messageItem.querySelector('.message-text').appendChild(fileWidget);
     }
 
-    messagesList.appendChild(messageItem);
-    messageInput.value = '';
+    messages_list.appendChild(messageItem);
+    message_input.value = '';
 
-    fetch('', {
+    fetch(fetchUrl, {
       method: 'POST',
       body: formData
     })
       .then(response => response.json())
       .then(data => {
+        const session_id = data.session_id
         const image_path_url = data.image_path_url;
         const response = data.response;
-        const messageItem = document.createElement('li');
-        messageItem.classList.add('message', 'received');
-        messageItem.innerHTML = `
+        const message_item = document.createElement('li');
+        message_item.classList.add('message', 'received');
+        message_item.innerHTML = `
         <div class="message-text">
             <div class="message-sender">
               <b>MARS</b>
@@ -243,18 +372,21 @@
           `;
 
         if (image_path_url) {
-            const imageWrapper = document.createElement('div');
-            imageWrapper.className = 'message-image';
-            const imageElement = document.createElement('img');
-            imageElement.src = image_path_url;
-            imageElement.alt = "Image";
-            imageWrapper.appendChild(imageElement);
-            messageItem.querySelector('.message-text').appendChild(imageWrapper);
+            const image_wrapper = document.createElement('div');
+            image_wrapper.className = 'message-image';
+            const image_element = document.createElement('img');
+            image_element.src = image_path_url;
+            image_element.alt = "Image";
+            image_wrapper.appendChild(image_element);
+            message_item.querySelector('.message-text').appendChild(image_wrapper);
         }
 
+        messages_list.appendChild(message_item);
+        messages_list.scrollTop = messages_list.scrollHeight;
 
-        messagesList.appendChild(messageItem);
-        messagesList.scrollTop = messagesList.scrollHeight;
+        if (!currentSessionId) {
+          window.location.href = `/chatbot/${session_id}/`;
+        }
       });
   });
 
