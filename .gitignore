@@ -1,2 +1,4 @@
 .env
 venv/
+django_chatbot/db.sqlite3
+*.pyc
