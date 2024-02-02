@@ -34,9 +34,11 @@
   }
 
   .card.flex-grow-1 {
-  flex-grow: 1; /* Allows the chat box to grow and fill available space */
-  flex-basis: 0; /* Resets the default starting size to 0 */
-  overflow: hidden; /* Prevents content from overflowing the chat box */
+  flex-grow: 1;
+  flex-basis: 0;
+  overflow: hidden; /* Keep this to prevent overflow */
+  height: 600px; /* Set a fixed height */
+  overflow-y: auto; /* Make it scrollable */
   }
 
   /* Style for chat session items */
