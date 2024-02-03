@@ -9,8 +9,7 @@ import time
 import os
 
 
-dotenv_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '.env')
-load_dotenv(dotenv_path)
+load_dotenv()
 stripe_api_key = os.getenv("STRIPE_API_KEY_TEST")
 
 @login_required(login_url = "/login/")
