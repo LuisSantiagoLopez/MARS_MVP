@@ -10,10 +10,10 @@ def create_product_image(prompt, chat_instance_id, conversationCostCalculator):
     
     # Paso 1: Encontrar el usuario asociado con la instancia de chat dada
     chat_instance = Chat.objects.get(id=chat_instance_id)
-    user = chat_instance.user
+    chat_session = chat_instance.chat_session
 
     # Paso 2: Encontrar la última imagen subida por ese usuario
-    recent_chat_with_image = Chat.objects.filter(user=user).exclude(user_input_image='').order_by('-created_at').first()
+    recent_chat_with_image = Chat.objects.filter(chat_session=chat_session).exclude(user_input_image='').order_by('-created_at').first()
 
     image_path = recent_chat_with_image.user_input_image.path
     if image_path is None:
