@@ -16,6 +16,7 @@ def create_product_image(prompt, chat_instance_id, conversationCostCalculator):
     recent_chat_with_image = Chat.objects.filter(chat_session=chat_session).exclude(user_input_image='').order_by('-created_at').first()
 
     image_path = recent_chat_with_image.user_input_image.path
+    
     if image_path is None:
         return "No se puede crear una foto de producto porque el usuario no ha subido una foto."
 
