@@ -1,0 +1,398 @@
+{% extends 'base.html' %} 
+
+{% block container_classes %}full-width-container{% endblock %}
+
+{% block styles %}
+
+<style>
+  body,
+  html {
+    height: 100%;
+  }
+
+  .sidebar {
+    width: 300px;
+    background: #f4f4f4;
+    border-right: 1px solid #ddd;
+    flex-shrink: 0; /* Prevents the sidebar from shrinking */
+  }
+
+  /* Added styles for the close button */
+  .sidebar-close button {
+    display: block; /* Make the button take its own line */
+    width: 100%; /* Stretch the button to the full width of the sidebar */
+    padding: 10px; /* Add some padding for better touch */
+    border: none; /* Remove the default button border */
+    background: #ccc; /* A light grey background for the button */
+    cursor: pointer; /* Change the cursor to pointer when hovering over the button */
+  }
+
+  /* Adjust the chat container to be a flex container */
+  .chat-container {
+    display: flex;
+    height: 100%;
+  }
+
+  .card.flex-grow-1 {
+  flex-grow: 1;
+  flex-basis: 0;
+  overflow: hidden; /* Keep this to prevent overflow */
+  height: 600px; /* Set a fixed height */
+  overflow-y: auto; /* Make it scrollable */
+  }
+
+  /* Style for chat session items */
+  .session-item {
+  padding: 10px;
+  display: flex; /* Enable flexbox layout */
+  justify-content: space-between; /* Space between session text and delete icon */
+  align-items: center; /* Center items vertically */
+  }
+
+  .session-item:hover {
+    background: #e9e9e9;
+  }
+
+  .session-item:hover .delete-session {
+  display: inline; /* Show on hover */
+  } 
+
+  .delete-session {
+  display: none; /* Hide by default */
+  cursor: pointer; /* Change cursor on hover */
+  }
+
+  #reopen-sidebar {
+  position: fixed; /* Or absolute, depending on your layout */
+  top: 50%; /* Middle of the screen vertically */
+  left: 0; /* At the left edge, adjust as needed */
+  transform: translateY(-50%); /* Center it vertically */
+  background: #007bff; /* Match your theme or use a neutral color */
+  color: white; /* Icon color */
+  padding: 5px 10px; /* Small padding */
+  border-radius: 0 5px 5px 0; /* Rounded corners on the right side */
+  font-size: 20px; /* Adjust size as needed */
+  z-index: 1000; /* Ensure it's above other content */
+  }
+
+  .chat-messages {
+    height: calc(100vh - 150px);
+    overflow-y: auto;
+    }
+
+  .messages-box {
+    flex-grow: 1;
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-bottom: 10px; /* Add padding to space out messages from the form */
+    margin-bottom: 50px; /* Adjust this to the height of your message form */
+  }
+
+  .messages-list {
+    padding-left: 0;
+  }
+
+  .message {
+    margin-bottom: 15px;
+    list-style: none;
+  }
+
+  .message-text {
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .sent {
+    background-color: #dcf8c6;
+    align-self: flex-end;
+  }
+
+  .received {
+    background-color: #f1f0f0;
+    align-self: flex-start;
+  }
+
+  .message-form {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+  }
+
+  .message-input {
+    flex: 1;
+    border-radius: 0;
+    border-right: none;
+  }
+
+  .btn-send {
+    border-radius: 0;
+  }
+
+  .full-width-container {
+    max-width: none;
+    padding: 0;
+    margin: 0 auto;
+  }
+
+  .message-image img {
+    max-width: 50%; /* Adjust this value as needed */
+    max-height: 200px; /* Adjust this value as needed */
+    width: auto;
+    height: auto;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.file-indicator {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 0.9em;
+  color: #888;
+  background: #f0f0f0;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+</style>
+{% endblock %} 
+{% block title %}Chat{% endblock %}
+{% block content %}
+<div class="chat-container">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-close">
+      <button onclick="toggleSidebar()">Close</button>
+    </div>
+    <div class="session-item" onclick="createSession()">New Chat +</div>
+    {% for session in chat_sessions %}
+      <div class="session-item" onclick="changeSession('{{ session.id }}')">
+        Chat {{ session.id }}
+        <span class="delete-session" onclick="deleteSession(event, '{{ session.id }}')">&#x1F5D1;</span> <!-- Trash can icon -->
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Arrow Icon for Reopening Sidebar -->
+  <div id="reopen-sidebar" onclick="toggleSidebar()" style="cursor: pointer; display: none;">
+    &#9654; <!-- Unicode right-pointing triangle, you can replace it with an icon -->
+  </div>
+
+  <div class="card flex-grow-1">
+    <div class="card-body messages-box">
+      <ul class="list-unstyled messages-list">
+
+        <li class="message received">
+          <div class="message-text">
+            <div class="message-sender">
+              <b>MARS</b>
+            </div>
+            <div class="message-content">
+              Hola {{user.username}}, soy MARS, tu publicista digital. Chatea conmigo para comenzar a crear publicaciones para el Instagram de tu negocio.
+            </div>
+          </div>
+        </li>
+
+        {% for chat in chats %}
+          {% if chat.chat_session.user == request.user %}
+            <li class="message sent">
+              <div class="message-text">
+                <div class="message-sender">
+                  <b>{{ user.username }}</b>
+                </div>
+                <div class="message-content">
+                  {{ chat.message }}
+                  {% if chat.user_input_image %}
+                    <div class="message-image">
+                      <img src="{{ chat.user_input_image.url }}" alt="Image" style="max-width: 100%; height: auto;">
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </li>
+
+            <li class="message received">
+              <div class="message-text">
+                <div class="message-sender">
+                  <b>MARS</b>
+                </div>
+                <div class="message-content">
+                  {{ chat.response }}
+                </div>
+                {% if chat.image_path %}
+                  <div class="message-image">
+                    <img src="{{ chat.image_path.url }}" alt="Image" style="max-width: 100%; height: auto;">
+                  </div>
+                {% endif %}
+              </div>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+      </ul>
+
+    </div>
+  </div>
+  <form class="message-form" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="input-group">
+    <input type="file" id="file-input" name="image" style="display: none;" />
+    <label for="file-input" class="btn btn-secondary">📎</label>
+    <input type="text" class="form-control message-input" placeholder="Chatea con MARS..." name="message" />
+    <div class="input-group-append">
+      <button type="submit" class="btn btn-primary btn-send">Send</button>
+    </div>
+  </div>
+  </form>
+</div>
+
+<script>
+  const baseUrl = '/chatbot/';
+  const currentPath = window.location.pathname;
+  const pathSegments = currentPath.split('/').filter(Boolean); // Split by '/' and remove any empty strings
+
+  // Assume the session ID is the last segment in the URL path, if present
+  const currentSessionId = pathSegments.length > 1 ? pathSegments[pathSegments.length - 1] : null;
+  const fetchUrl = baseUrl + (currentSessionId ? `${currentSessionId}/` : "");
+
+  const messages_list = document.querySelector('.messages-list');
+  const message_form = document.querySelector('.message-form');
+  const message_input = document.querySelector('.message-input');
+  const file_input = document.querySelector('#file-input');
+
+  function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const reopenSidebar = document.getElementById('reopen-sidebar');
+
+  if (sidebar.style.display === 'none') {
+    sidebar.style.display = 'block';
+    reopenSidebar.style.display = 'none'; // Hide arrow when sidebar is open
+  } else {
+    sidebar.style.display = 'none';
+    reopenSidebar.style.display = 'flex'; // Show arrow when sidebar is closed
+  }
+  }
+
+  function deleteSession(event, sessionId) {
+  event.stopPropagation(); // Prevent the session change action
+
+  // Get the CSRF token from a cookie
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  // Directly send the request to delete the session, including the CSRF token in the request headers
+  fetch(`/delete-session/${sessionId}/`, {
+    method: 'DELETE',
+    headers: {
+      'X-CSRFToken': csrfToken // Include CSRF token in the request header
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      window.location.reload(); // Reload the page to update the session list
+    } else {
+      console.error('Error deleting session:', response.statusText);
+    }
+  });
+  }
+
+  function changeSession(session_id) {
+    window.location.href = `${baseUrl}${session_id}/`;
+  }
+
+  function createSession() {
+    window.location.href = baseUrl;
+  }
+
+  message_form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const message = message_input.value.trim();
+    const file = file_input.files[0];
+
+    if (message.length === 0) {
+      return;
+    }
+
+    // Clear the message input field
+    message_input.value = '';
+    file_input.value = '';
+
+    // Create FormData object and append message and file
+    let formData = new FormData();
+    formData.append('message', message);
+    if (file) {
+      formData.append('image', file);
+    }
+
+    // Append CSRF token to the FormData
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    formData.append('csrfmiddlewaretoken', csrfToken);
+
+    const messageItem = document.createElement('li');
+    messageItem.classList.add('message', 'sent');
+    messageItem.innerHTML = `
+        <div class="message-text">
+            <div class="message-sender">
+                <b>You</b>
+            </div>
+            <div class="message-content">
+                ${message}
+            </div>
+        </div>`;
+    
+    if (file) {
+        const fileWidget = document.createElement('div');
+        fileWidget.className = 'file-indicator';
+        fileWidget.innerHTML = `📎 ${file.name}`;
+        messageItem.querySelector('.message-text').appendChild(fileWidget);
+    }
+
+    messages_list.appendChild(messageItem);
+    message_input.value = '';
+
+    fetch(fetchUrl, {
+      method: 'POST',
+      body: formData
+    })
+      .then(response => response.json())
+      .then(data => {
+        const session_id = data.session_id
+        const image_path_url = data.image_path_url;
+        const response = data.response;
+        const message_item = document.createElement('li');
+        message_item.classList.add('message', 'received');
+        message_item.innerHTML = `
+        <div class="message-text">
+            <div class="message-sender">
+              <b>MARS</b>
+            </div>
+            <div class="message-content">
+                ${response}
+            </div>
+        </div>
+          `;
+
+        if (image_path_url) {
+            const image_wrapper = document.createElement('div');
+            image_wrapper.className = 'message-image';
+            const image_element = document.createElement('img');
+            image_element.src = image_path_url;
+            image_element.alt = "Image";
+            image_wrapper.appendChild(image_element);
+            message_item.querySelector('.message-text').appendChild(image_wrapper);
+        }
+
+        messages_list.appendChild(message_item);
+        messages_list.scrollTop = messages_list.scrollHeight;
+
+        if (!currentSessionId) {
+          window.location.href = `/chatbot/${session_id}/`;
+        }
+      });
+  });
+
+
+</script>
+
+{% endblock %}
