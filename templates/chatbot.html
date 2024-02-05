@@ -236,14 +236,21 @@
   </div>
   <form class="message-form" enctype="multipart/form-data">
   {% csrf_token %}
+  
   <div class="input-group">
+
     <input type="file" id="file-input" name="image" style="display: none;" />
+
     <label for="file-input" class="btn btn-secondary">📎</label>
+
     <input type="text" class="form-control message-input" placeholder="Chatea con MARS..." name="message" />
+
     <div class="input-group-append">
       <button type="submit" class="btn btn-primary btn-send">Send</button>
     </div>
+
   </div>
+
   </form>
 </div>
 
