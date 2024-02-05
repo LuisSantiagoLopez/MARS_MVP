@@ -1,12 +1,12 @@
 from django.shortcuts import render
-from asgiref.sync import sync_to_async
 from django.http import JsonResponse
 from .models import Chat, ChatSession
 from core_functions_mars.chat import Assistant
 from django.contrib.auth.decorators import login_required
 
 
-async def chatbot(request, session_id=None):
+@login_required(login_url = "/login/")
+def chatbot(request, session_id=None):
     """
     Esta view tiene varias funciones. Primero, le hace render al template chatbot.html, que maneja la interacción principal con el usuario. Con el primer render, o "GET" request, pasa el id de la sesión actual, los chats de la sesión actual, y todas las sesiones de chat del usuario. 
 
@@ -50,7 +50,7 @@ async def chatbot(request, session_id=None):
         user_input_image = request.FILES.get('image', None)
 
         # Creo una respuesta 
-        assistant_response_text, generated_image_path_url = await sync_to_async(assistant.generate_assistant_response)(user_message=user_message, user_input_image=user_input_image)
+        assistant_response_text, generated_image_path_url = assistant.generate_assistant_response(user_message=user_message, user_input_image=user_input_image)
 
         # Armo el JSON que recibirá el frontend 
         context = {
