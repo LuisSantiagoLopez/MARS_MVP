@@ -11,8 +11,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
 import os
 import dj_database_url
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -87,8 +90,19 @@ WSGI_APPLICATION = "django_chatbot.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',  # Or 'django.db.backends.postgresql_psycopg2' if you're using older Django/psycopg2 versions
+        'NAME': 'django',  # Your database name
+        'USER': 'doadmin',  # Your database username
+        'PASSWORD': 'AVNS_UuTPtIxb9ZZRyMdaRI6',  # Your database password
+        'HOST': 'dbaas-db-4784381-do-user-15802671-0.c.db.ondigitalocean.com',  # Your database host
+        'PORT': '25060',  # Your database port
+        'OPTIONS': {
+            'sslmode': 'require',  # This is important for DigitalOcean's managed databases which require SSL
+        },
+    }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

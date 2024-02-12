@@ -913,3 +913,38 @@ gpt-4-1106-preview,0.0949499999999999,2024-01-29 17:24:55.024739,,prueba_2,assis
 gpt-4-1106-preview,0.00615,2024-01-29 17:24:58.534155,,prueba_2,json or other function,372.0,81.0
 gpt-4-1106-preview,0.02359,2024-02-03 18:40:20.091400,,admin,assistant,1936.0,141.0
 gpt-4-1106-preview,0.009,2024-02-03 18:40:27.320308,,admin,json or other function,435.0,155.0
+gpt-4-1106-preview,0.03457,2024-02-05 02:34:39.764415,,prueba1,assistant,2038.0,473.0
+gpt-4-1106-preview,0.02261,2024-02-05 02:35:15.647779,,prueba1,json or other function,767.0,498.0
+gpt-4-1106-preview,0.0020599999999999,2024-02-05 02:36:28.761262,,prueba1,json or other function,146.0,20.0
+photoroom,0.15,2024-02-05 02:36:35.928601,,prueba1,photo product,0.0,0.0
+gpt-4-1106-preview,0.05828,2024-02-05 02:36:47.044941,,prueba1,assistant,5222.0,202.0
+gpt-4-1106-preview,0.00789,2024-02-05 02:36:53.934055,,prueba1,json or other function,408.0,127.0
+gpt-4-1106-preview,0.03799,2024-02-05 03:04:01.512866,,prueba1,assistant,3304.0,165.0
+gpt-4-1106-preview,0.00962,2024-02-05 03:04:10.719714,,prueba1,json or other function,458.0,168.0
+dall-e-3,0.04,2024-02-05 03:04:57.374191,,prueba1,photo product,0.0,0.0
+gpt-4-1106-preview,0.07836,2024-02-05 03:05:09.123652,,prueba1,assistant,7128.0,236.0
+gpt-4-1106-preview,0.00858,2024-02-05 03:05:16.868550,,prueba1,json or other function,423.0,145.0
+gpt-4-1106-preview,0.02551,2024-02-05 21:42:44.078602,,castrof,assistant,1948.0,201.0
+gpt-4-1106-preview,0.011040000000000001,2024-02-05 21:42:55.435475,,castrof,json or other function,495.0,203.0
+apify website scraper,0.004555707451467712,2024-02-05 21:45:30.279286,,castrof,apify website scraper,0.0,0.0
+gpt-4-1106-preview,0.054209999999999994,2024-02-05 21:45:56.575014,,castrof,assistant,4629.0,264.0
+gpt-4-1106-preview,0.01248,2024-02-05 21:46:06.779929,,castrof,json or other function,531.0,239.0
+apify instagram scraper,0.04779295641237663,2024-02-05 21:48:21.379110,,castrof,apify instagram scraper,0.0,0.0
+gpt-4-vision-preview,0.02546,2024-02-05 21:48:33.252471,,castrof,vision,881.0,300.0
+dall-e-3,0.04,2024-02-05 21:48:56.577263,,castrof,photo product,0.0,0.0
+gpt-4-1106-preview,0.09743,2024-02-05 21:49:08.366714,,castrof,assistant,8948.0,265.0
+gpt-4-1106-preview,0.00822,2024-02-05 21:49:22.097719,,castrof,json or other function,435.0,129.0
+dall-e-3,0.04,2024-02-05 21:51:03.070894,,castrof,photo product,0.0,0.0
+gpt-4-1106-preview,0.07699,2024-02-05 21:51:20.105824,,castrof,assistant,6880.0,273.0
+gpt-4-1106-preview,0.007719999999999999,2024-02-05 21:51:32.869032,,castrof,json or other function,424.0,116.0
+dall-e-3,0.04,2024-02-05 21:52:47.820792,,castrof,photo product,0.0,0.0
+gpt-4-1106-preview,0.08281999999999999,2024-02-05 21:53:04.829460,,castrof,assistant,7526.0,252.0
+gpt-4-1106-preview,0.006960000000000001,2024-02-05 21:53:10.224953,,castrof,json or other function,399.0,99.0
+gpt-4-1106-preview,0.00406,2024-02-05 21:56:31.565189,,castrof,json or other function,235.0,57.0
+gpt-4-1106-preview,0.0928,2024-02-05 21:56:47.459950,,castrof,assistant,8203.0,359.0
+gpt-4-1106-preview,0.0109,2024-02-05 21:57:07.965674,,castrof,json or other function,484.0,202.0
+gpt-4-1106-preview,0.05078,2024-02-05 21:59:13.272037,,castrof,assistant,4424.0,218.0
+gpt-4-1106-preview,0.00953,2024-02-05 21:59:29.434270,,castrof,json or other function,512.0,147.0
+dall-e-3,0.04,2024-02-05 23:54:43.294912,,castrof,photo product,0.0,0.0
+gpt-4-1106-preview,0.10521,2024-02-05 23:54:55.241442,,castrof,assistant,9528.0,331.0
+gpt-4-1106-preview,0.00882,2024-02-05 23:55:05.725361,,castrof,json or other function,450.0,144.0
