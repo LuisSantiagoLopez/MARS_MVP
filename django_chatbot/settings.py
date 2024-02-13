@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-import dj_database_url
 
 load_dotenv()
 
@@ -24,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-iih-w^v1ij*k+ibfg(r#f=(j2)4hm!_%kr!r-rowno$2y+o)!2"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -91,15 +90,13 @@ WSGI_APPLICATION = "django_chatbot.wsgi.application"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # Or 'django.db.backends.postgresql_psycopg2' if you're using older Django/psycopg2 versions
-        'NAME': 'django',  # Your database name
-        'USER': 'doadmin',  # Your database username
-        'PASSWORD': 'AVNS_UuTPtIxb9ZZRyMdaRI6',  # Your database password
-        'HOST': 'dbaas-db-4784381-do-user-15802671-0.c.db.ondigitalocean.com',  # Your database host
-        'PORT': '25060',  # Your database port
-        'OPTIONS': {
-            'sslmode': 'require',  # This is important for DigitalOcean's managed databases which require SSL
-        },
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django',
+        'USER': 'django',
+        'PASSWORD': os.getenv("DATABASE_PASSWORD"),
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'OPTIONS': {'sslmode': 'require'},
     }
 }
 
@@ -139,11 +136,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 
-MEDIA_ROOT = ''
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
