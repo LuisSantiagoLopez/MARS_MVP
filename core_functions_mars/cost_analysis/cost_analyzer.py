@@ -70,8 +70,8 @@ class ConversationCostCalculator:
     def calculate_assistant_tokens(self, run):
         usage_info = run.usage
 
-        num_tokens_input = usage_info['prompt_tokens']
-        num_tokens_output = usage_info['completion_tokens']
+        num_tokens_input = usage_info.prompt_tokens
+        num_tokens_output = usage_info.completion_tokens
 
         self.calculate_cost(num_tokens_input, num_tokens_output, model="gpt-4-1106-preview", use_case="assistant")
 
