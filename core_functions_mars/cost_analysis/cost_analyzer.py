@@ -25,9 +25,9 @@ class ConversationCostCalculator:
         total_cost += cost_rate_vision_image + photoroom_cost + dalle3_cost + apify_run_cost_usd
 
         #global cost_record
-        cost_entry = pd.DataFrame({'User': [self.user],'Model': [model], 'Cost': [total_cost], 'Timestamp': [pd.Timestamp.now()], 'Real Cost': [None], 'Use Case': [use_case], 'Context Tokens': [num_tokens_input], 'Output Tokens': [num_tokens_output]})
+        #cost_entry = pd.DataFrame({'User': [self.user],'Model': [model], 'Cost': [total_cost], 'Timestamp': [pd.Timestamp.now()], 'Real Cost': [None], 'Use Case': [use_case], 'Context Tokens': [num_tokens_input], 'Output Tokens': [num_tokens_output]})
 
-        cost_record = pd.concat([cost_record, cost_entry], ignore_index=True)
+        #cost_record = pd.concat([cost_record, cost_entry], ignore_index=True)
 
         #cost_record.to_csv(csv_file, index=False)
 
