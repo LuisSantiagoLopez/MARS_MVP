@@ -13,9 +13,7 @@ def process_image_with_vision(image_url, caption_image, conversationCostCalculat
                 {
                     "role": "user",
                     "content": [
-                        # Este prompt emplea el caption de la imagen para entender mejor la imagen enviada.
                         {"type": "text", "text": f"""Describe en detalle la imagen de la publicación de Instagram enlazada. Emplea el caption de la publicación como contexto de la imagen: '{caption_image}'"""},
-                        # Podemos enviar directamente el url que facebook encontró 
                         {
                             "type": "image_url",
                             "image_url": {"url": image_url},
@@ -23,7 +21,7 @@ def process_image_with_vision(image_url, caption_image, conversationCostCalculat
                     ],
                 }
             ],
-            max_tokens=300, # Tenemos que reducir el número de tokens producidas, dado que podrían ser muchas imagenes. 
+            max_tokens=300,  
         )
         # Calcula costos de vision 
         conversationCostCalculator.calculate_chat_and_vision_tokens(response,model)
@@ -77,6 +75,9 @@ def searchInstagramTrends(palabra, conversationCostCalculator):
 
             # Concatena la descripción procesada de la imagen a la cadena de resultados.
             result_string += f'\n ====== \n {vision_response} \n ====== \n'
+            
+    if not result_string: 
+        result_string = "No se encontraron tendencias."
 
     # Devuelve la cadena concatenada de todos los resultados.
     return result_string
