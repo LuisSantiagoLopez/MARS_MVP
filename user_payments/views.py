@@ -36,6 +36,9 @@ def product_page(request):
            success_url = request.build_absolute_uri('payment_successful') + '?session_id={CHECKOUT_SESSION_ID}',
            cancel_url = request.build_absolute_uri('payment_cancelled'),
         )
+      
+      UserPayments.objects.create(app_user=request.user)
+
       return redirect(checkout_session.url, code=303)
   
   return render(request, "user_payment/product_page.html") 
