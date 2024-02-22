@@ -12,8 +12,6 @@
 
   .sidebar {
     width: 300px;
-    height: 100%;
-    overflow-y: auto;
     background: #f4f4f4;
     border-right: 1px solid #ddd;
     flex-shrink: 0; /* Prevents the sidebar from shrinking */
@@ -32,21 +30,7 @@
   /* Adjust the chat container to be a flex container */
   .chat-container {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
     height: 100%;
-  }
-
-  .sidebar {
-  flex: 1; /* shorthand for flex-grow: 1, flex-shrink: 1, flex-basis: 0 */
-  }
-
-  .messages-box {
-    flex: 5; /* Adjust the ratio to control space distribution */
-  }
-
-  .messages-box {
-  overflow-y: auto; /* Only if you want a scrollable message area */
   }
 
   .card.flex-grow-1 {
@@ -100,6 +84,7 @@
     flex-grow: 1;
     overflow-y: auto; /* Enable vertical scrolling */
     padding-bottom: 10px; /* Add padding to space out messages from the form */
+    margin-bottom: 50px; /* Adjust this to the height of your message form */
   }
 
   .messages-list {
@@ -128,20 +113,13 @@
 
   .message-form {
     display: flex;
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     padding: 10px;
     background-color: #f8f9fa;
   }
-
-  .chat-container,
-  .sidebar,
-  .messages-box {
-    margin: 0;
-    padding: 0;
-  }
-
 
   .message-input {
     flex: 1;
@@ -293,31 +271,15 @@
   function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   const reopenSidebar = document.getElementById('reopen-sidebar');
-  
-  if (sidebar.style.display === 'none' || sidebar.style.display === '') {
+
+  if (sidebar.style.display === 'none') {
     sidebar.style.display = 'block';
-    reopenSidebar.style.display = 'none';
-    localStorage.setItem('sidebarState', 'open'); 
+    reopenSidebar.style.display = 'none'; // Hide arrow when sidebar is open
   } else {
     sidebar.style.display = 'none';
-    reopenSidebar.style.display = 'block';
-    localStorage.setItem('sidebarState', 'closed'); 
+    reopenSidebar.style.display = 'flex'; // Show arrow when sidebar is closed
   }
   }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.getElementById('sidebar');
-    const reopenSidebar = document.getElementById('reopen-sidebar');
-    const sidebarState = localStorage.getItem('sidebarState') || 'closed'; // Default to closed
-
-    if (sidebarState === 'closed') {
-      sidebar.style.display = 'none';
-      reopenSidebar.style.display = 'block';
-    } else {
-      sidebar.style.display = 'block';
-      reopenSidebar.style.display = 'none';
-    }
-  });
 
   function deleteSession(event, sessionId) {
   event.stopPropagation(); // Prevent the session change action
@@ -428,14 +390,15 @@
             message_item.querySelector('.message-text').appendChild(image_wrapper);
         }
 
+        messages_list.appendChild(message_item);
+        messages_list.scrollTop = messages_list.scrollHeight;
+
         function scrollToBottom() {
           const messagesBox = document.querySelector('.messages-box');
           messagesBox.scrollTop = messagesBox.scrollHeight; // Scroll to the bottom
         }
 
-        messages_list.appendChild(message_item);
-        messages_list.scrollTop = messages_list.scrollHeight;
-        scrollToBottom();
+        scrollToBottom(); 
 
         if (!currentSessionId) {
           window.location.href = `/chatbot/${session_id}/`;
