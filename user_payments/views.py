@@ -33,8 +33,8 @@ def product_page(request):
                 },
             ],
            mode = "subscription",
-           success_url = 'payment_successful' + '?session_id={CHECKOUT_SESSION_ID}',
-           cancel_url = 'payment_cancelled',
+           success_url = request.build_absolute_uri('payment_successful') + '?session_id={CHECKOUT_SESSION_ID}',
+           cancel_url = request.build_absolute_uri('payment_cancelled'),
         )
       return redirect(checkout_session.url, code=303)
   
