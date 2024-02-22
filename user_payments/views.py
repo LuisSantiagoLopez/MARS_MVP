@@ -83,17 +83,18 @@ def stripe_webhook(request):
 
 @login_required
 def customer_portal(request):
-    stripe.api_key = stripe_api_key
+   stripe.api_key = stripe_api_key
 
-    # Retrieve the Stripe Customer ID from your database
-    user_payment = UserPayments.objects.get(app_user=request.user)
-    customer_id = user_payment.stripe_customer_id  # Ensure you have a field to store Stripe Customer ID
+   # Retrieve the Stripe Customer ID from your database
+   user_payment = UserPayments.objects.get(app_user=request.user)
+   customer_id = user_payment.stripe_customer_id
+   customer = stripe.Customer.retrieve(customer_id)
 
-    # Create a session for the Stripe Customer Portal
-    session = stripe.billing_portal.Session.create(
-        customer=customer_id,
-        return_url=request.build_absolute_uri('/chatbot/'),  # Specify where the user should be redirected after leaving the portal
-    )
+   # Create a session for the Stripe Customer Portal
+   session = stripe.billing_portal.Session.create(
+      customer=customer,
+      return_url=request.build_absolute_uri('/chatbot/'),  # Specify where the user should be redirected after leaving the portal
+   )
 
-    # Redirect the user to the Stripe Customer Portal
-    return redirect(session.url)
+   # Redirect the user to the Stripe Customer Portal
+   return redirect(session.url)
