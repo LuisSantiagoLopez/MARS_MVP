@@ -69,7 +69,10 @@ def stripe_webhook(request):
       return HttpResponse(status=400)
    except stripe.error.SignatureVerificationError as e: 
       return HttpResponse(status=400) 
-   if event["type"] == "checkout.session.completed":
+   
+   event_type = event["type"]
+
+   if event_type == "checkout.session.completed":
       session = event["data"]["object"]
       session_id = session.get("id")
       customer = session.get("customer")
@@ -79,18 +82,18 @@ def stripe_webhook(request):
       user_payment.payment_bool = True
       user_payment.stripe_customer_id = customer
       user_payment.save()
-   elif event["type"] == 'invoice.paid':
+   elif event_type == 'invoice.paid':
       # Continue to provision the subscription as payments continue to be made.
       # Store the status in your database and check when a user accesses your service.
       # This approach helps you avoid hitting rate limits.
       print(0)
-   elif event["type"] == 'invoice.payment_failed':
+   elif event_type == 'invoice.payment_failed':
       # The payment failed or the customer does not have a valid payment method.
       # The subscription becomes past_due. Notify your customer and send them to the
       # customer portal to update their payment information.
       print(0)
    else:
-      print(f"Unhandled event type {event["type"]}")
+      print(f"Unhandled event type {event_type}")
 
    return HttpResponse(status=200)
 
