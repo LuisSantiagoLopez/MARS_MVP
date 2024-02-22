@@ -33,15 +33,16 @@ def product_page(request):
                 },
             ],
            mode = "subscription",
-           success_url = request.build_absolute_uri('/payment_successful') + '?session_id={CHECKOUT_SESSION_ID}',
-           cancel_url = request.build_absolute_uri('payment_cancelled'),
+           success_url = 'payment_successful' + '?session_id={CHECKOUT_SESSION_ID}',
+           cancel_url = 'payment_cancelled',
         )
       return redirect(checkout_session.url, code=303)
   
   return render(request, "user_payment/product_page.html") 
 
-def payment_successful(request, checkout_session_id):
+def payment_successful(request):
    stripe.api_key = stripe_api_key
+   checkout_session_id = request.GET.get("session_id", None)
    session = stripe.checkout.Session.retrieve(checkout_session_id)
    customer = stripe.Customer.retrieve(session.customer)
    user_payment = UserPayments.objects.get(app_user=request.user)
