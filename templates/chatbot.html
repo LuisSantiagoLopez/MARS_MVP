@@ -332,6 +332,13 @@
       formData.append('image', file);
     }
 
+    function scrollToBottom() {
+          const messagesBox = document.querySelector('.messages-box');
+          messagesBox.scrollTop = messagesBox.scrollHeight; // Scroll to the bottom
+    }
+
+    scrollToBottom();
+
     // Append CSRF token to the FormData
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     formData.append('csrfmiddlewaretoken', csrfToken);
@@ -392,11 +399,6 @@
 
         messages_list.appendChild(message_item);
         messages_list.scrollTop = messages_list.scrollHeight;
-
-        function scrollToBottom() {
-          const messagesBox = document.querySelector('.messages-box');
-          messagesBox.scrollTop = messagesBox.scrollHeight; // Scroll to the bottom
-        }
 
         scrollToBottom(); 
 
