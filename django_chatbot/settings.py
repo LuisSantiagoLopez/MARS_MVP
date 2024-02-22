@@ -28,7 +28,7 @@ SECRET_KEY = "insecure-iih-w^v1ij*k+ibfg(r#f=(j2)4hm!_%kr!r-rowno$2y+o)!2"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["marsai.tech", "www.marsai.tech"]
 
 
 # Application definition
@@ -165,3 +165,5 @@ LOGGING = {
         },
     },
 }
+
+CSRF_TRUSTED_ORIGINS = ["https://marsai.tech"]
