@@ -196,7 +196,7 @@
 
         {% for chat in chats %}
           {% if chat.chat_session.user == request.user %}
-            <li class="message sent">
+            <li class="message received">
               <div class="message-text">
                 <div class="message-sender">
                   <b>{{ user.username }}</b>
@@ -337,7 +337,7 @@
     formData.append('csrfmiddlewaretoken', csrfToken);
 
     const messageItem = document.createElement('li');
-    messageItem.classList.add('message', 'sent');
+    messageItem.classList.add('message', 'received');
     messageItem.innerHTML = `
         <div class="message-text">
             <div class="message-sender">
