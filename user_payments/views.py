@@ -83,14 +83,8 @@ def stripe_webhook(request):
       user_payment.stripe_customer_id = customer
       user_payment.save()
    elif event_type == 'invoice.paid':
-      # Continue to provision the subscription as payments continue to be made.
-      # Store the status in your database and check when a user accesses your service.
-      # This approach helps you avoid hitting rate limits.
       print(0)
    elif event_type == 'invoice.payment_failed':
-      # The payment failed or the customer does not have a valid payment method.
-      # The subscription becomes past_due. Notify your customer and send them to the
-      # customer portal to update their payment information.
       print(0)
    else:
       print(f"Unhandled event type {event_type}")

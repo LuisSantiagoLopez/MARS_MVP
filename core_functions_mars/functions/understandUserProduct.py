@@ -11,10 +11,10 @@ def understandUserProduct(chat_instance_id, conversationCostCalculator, descripc
 
     # Paso 1: Encontrar el usuario asociado con la instancia de chat dada
     chat_instance = Chat.objects.get(id=chat_instance_id)
-    user = chat_instance.user
+    chat_session = chat_instance.chat_session
 
     # Paso 2: Encontrar la última imagen subida por ese usuario
-    recent_chat_with_image = Chat.objects.filter(user=user).exclude(user_input_image='').order_by('-created_at').first()
+    recent_chat_with_image = Chat.objects.filter(chat_session=chat_session).exclude(user_input_image='').order_by('-created_at').first()
 
     if recent_chat_with_image is None or not recent_chat_with_image.user_input_image:
         return "No se encontró una imagen reciente para el usuario."
