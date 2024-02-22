@@ -79,6 +79,19 @@ def stripe_webhook(request):
       user_payment.payment_bool = True
       user_payment.stripe_customer_id = customer
       user_payment.save()
+   elif event["type"] == 'invoice.paid':
+      # Continue to provision the subscription as payments continue to be made.
+      # Store the status in your database and check when a user accesses your service.
+      # This approach helps you avoid hitting rate limits.
+      print(0)
+   elif event["type"] == 'invoice.payment_failed':
+      # The payment failed or the customer does not have a valid payment method.
+      # The subscription becomes past_due. Notify your customer and send them to the
+      # customer portal to update their payment information.
+      print(0)
+   else:
+      print(f"Unhandled event type {event["type"]}")
+
    return HttpResponse(status=200)
 
 @login_required
@@ -87,8 +100,9 @@ def customer_portal(request):
 
    # Retrieve the Stripe Customer ID from your database
    user_payment = UserPayments.objects.get(app_user=request.user)
-   customer_id = user_payment.stripe_customer_id
-   customer = stripe.Customer.retrieve(customer_id)
+   checkout_session_id = user_payment.stripe_checkout_id
+   session = stripe.checkout.Session.retrieve(checkout_session_id)
+   customer = stripe.Customer.retrieve(session.customer)
 
    # Create a session for the Stripe Customer Portal
    session = stripe.billing_portal.Session.create(
