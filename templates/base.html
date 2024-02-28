@@ -36,10 +36,13 @@
         </div>
       </div>
     </nav>
-    <div class="container {% block container_classes %}{% endblock %}">
+    <div class="container">
       {% block content %}
       {% endblock %}
     </div>
+
+      {% block no_container_content $}
+      {% endblock %}
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

@@ -1,7 +1,5 @@
 {% extends 'base.html' %} 
 
-{% block container_classes %}full-width-container{% endblock %}
-
 {% block styles %}
 
 <style>
@@ -158,8 +156,10 @@
 }
 </style>
 {% endblock %} 
+
 {% block title %}MARS{% endblock %}
-{% block content %}
+
+{% block no_container_content $}
 <div class="chat-container">
   <div class="sidebar" id="sidebar">
     <div class="sidebar-close">
@@ -253,7 +253,7 @@
 
   </form>
 </div>
-{% endblock %} 
+{% endblock %}
 
 {% block scripts %}
 <script>
