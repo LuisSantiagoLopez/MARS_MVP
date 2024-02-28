@@ -4,6 +4,10 @@
 
 {% block styles %}
 <style>
+  .container{
+    padding-top: 15px;
+  }
+
   body {
     background-color: #f0f0f0;
   }
@@ -65,9 +69,6 @@
     border: 1px solid #f5c6cb;
     border-radius: 4px;
   }
-  .form {
-    padding-top: 15px;
-  }
 </style>
 {% endblock %}
 
@@ -79,7 +80,7 @@
       {% if error_message %}
         <div class="alert alert-danger" role="alert">{{ error_message }}</div>
       {% endif %}
-      <form class="form" method="post">
+      <form method="post">
         {% csrf_token %}
         <div class="form-group">
           <label for="username">Username</label>
