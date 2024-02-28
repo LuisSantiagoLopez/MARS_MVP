@@ -65,8 +65,7 @@
   top: 50%; /* Middle of the screen vertically */
   left: 0; /* At the left edge, adjust as needed */
   transform: translateY(-50%); /* Center it vertically */
-  background: black;
-  color: gray; /* Icon color */
+  color: white; /* Icon color */
   padding: 5px 10px; /* Small padding */
   border-radius: 0 5px 5px 0; /* Rounded corners on the right side */
   z-index: 1000; /* Ensure it's above other content */
@@ -181,7 +180,7 @@
   </div>
 
   <!-- Arrow Icon for Reopening Sidebar -->
-  <div id="reopen-sidebar" onclick="toggleSidebar()" style="cursor: pointer; display: none;">
+  <div class="bg-dark" id="reopen-sidebar" onclick="toggleSidebar()" style="cursor: pointer; display: none;">
     &#9654; <!-- Unicode right-pointing triangle, you can replace it with an icon -->
   </div>
 
@@ -247,7 +246,7 @@
 
     <input type="file" id="file-input" name="image" style="display: none;" />
 
-    <label for="file-input" class="btn btn-secondary">📷</label>
+    <label for="file-input" class="btn btn-secondary bg-dark">📷</label>
 
     <input type="text" class="form-control message-input" placeholder="Chatea con MARS..." name="message" />
 
