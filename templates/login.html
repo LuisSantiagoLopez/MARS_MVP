@@ -12,7 +12,6 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    padding-top: 15px;
   }
   .card {
     max-width: 400px;
@@ -66,6 +65,9 @@
     border: 1px solid #f5c6cb;
     border-radius: 4px;
   }
+  .form {
+    padding-top: 15px;
+  }
 </style>
 {% endblock %}
 
@@ -77,7 +79,7 @@
       {% if error_message %}
         <div class="alert alert-danger" role="alert">{{ error_message }}</div>
       {% endif %}
-      <form method="post">
+      <form class="form" method="post">
         {% csrf_token %}
         <div class="form-group">
           <label for="username">Username</label>
