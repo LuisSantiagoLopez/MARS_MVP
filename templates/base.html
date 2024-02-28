@@ -10,8 +10,6 @@
     .navbar {
       height: 56px;
       display: flex; 
-      flex-wrap: nowrap;
-      align-items: center;
     }
 
     @media screen and (max-width: 767px) {
@@ -34,7 +32,6 @@
         <div>
           <ul class="navbar-nav">
             {% if user.is_authenticated %}
-              <span class="navbar-text">Logged in as {{user.username}} | </span>
               <li class="nav-item">
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                   {% csrf_token %}
