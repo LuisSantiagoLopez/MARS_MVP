@@ -31,8 +31,15 @@
     border: none;
     background: #ccc; /* Similar to the close button */
     cursor: pointer;
+    color: #333; /* This should be a color that contrasts with the button's background */
+    font-size: 16px; /* Adjust if necessary */
+    text-align: center; /* Center the text */
+    border-radius: 0; /* Remove border-radius if you don't want rounded corners */
+    /* Remove Bootstrap's default styling if needed */
+    box-shadow: none;
+    text-decoration: none;
   }
-
+  
   /* Adjusting the drop-up menu position */
   .drop-up {
     transform: translateY(-100%);
@@ -216,7 +223,7 @@
     <!-- Inside the sidebar, at the bottom -->
     <div class="user-menu">
       <button class="btn user-menu-button dropdown-toggle" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-        {{ user.username }} Hola
+        {{ user.username }}
       </button>
       <ul class="dropdown-menu dropdown-menu-end drop-up" aria-labelledby="userMenuButton">
         <li><a class="dropdown-item" href="#">Mi plan</a></li>
