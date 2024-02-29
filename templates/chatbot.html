@@ -138,6 +138,13 @@
     right: 0;
     padding: 10px;
     background-color: #f8f9fa;
+    left: 300px;
+    z-index: 100;
+    transition: left 0.3s;
+  }
+
+  .message-form .sidebar-closed {
+    left: 0; 
   }
 
   .message-input {
@@ -180,6 +187,15 @@
     .sidebar {
     width: 30%;
   }
+
+  .message-form {
+    left: 30%
+  }
+
+  .sidebar-closed .message-form {
+    left: 0; 
+  }
+
   }
 </style>
 {% endblock %} 
@@ -192,7 +208,7 @@
     <div class="sidebar-close">
       <button onclick="toggleSidebar()">Close</button>
     </div>
-    
+
     <!-- Inside the sidebar, at the bottom -->
     <div class="user-menu">
       <button class="btn user-menu-button dropdown-toggle" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -311,14 +327,17 @@
 
   function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
+  const chatContainer = document.getElementById('.chat-container');
   const reopenSidebar = document.getElementById('reopen-sidebar');
 
   if (sidebar.style.display === 'none') {
     sidebar.style.display = 'block';
     reopenSidebar.style.display = 'none'; // Hide arrow when sidebar is open
+    chatContainer.classList.remove('sidebar-closed');
   } else {
     sidebar.style.display = 'none';
     reopenSidebar.style.display = 'flex'; // Show arrow when sidebar is closed
+    chatContainer.classList.add('sidebar-closed');
   }
   }
 
