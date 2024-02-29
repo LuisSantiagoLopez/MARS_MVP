@@ -16,6 +16,28 @@
     flex-shrink: 0; /* Prevents the sidebar from shrinking */
   }
 
+  /* Custom styles for the user menu */
+  .user-menu {
+    position: fixed;
+    bottom: 0;
+    width: 300px; /* Same as sidebar width */
+    padding: 10px; /* Consistent with the close button */
+    background: #f4f4f4; /* Matching the sidebar background */
+  }
+
+  .user-menu-button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: #ccc; /* Similar to the close button */
+    cursor: pointer;
+  }
+
+  /* Adjusting the drop-up menu position */
+  .drop-up {
+    transform: translateY(-100%);
+  }
+
   /* Added styles for the close button */
   .sidebar-close button {
     display: block; /* Make the button take its own line */
@@ -177,6 +199,17 @@
         <span class="delete-session" onclick="deleteSession(event, '{{ session.id }}')">&#x1F5D1;</span> <!-- Trash can icon -->
       </div>
     {% endfor %}
+
+    <!-- Inside the sidebar, at the bottom -->
+    <div class="user-menu">
+      <button class="btn user-menu-button dropdown-toggle" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ user.username }}
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end drop-up" aria-labelledby="userMenuButton">
+        <li><a class="dropdown-item" href="#">Mi plan</a></li>
+        <li><a class="dropdown-item" href="#">Configuraciones</a></li>
+      </ul>
+    </div>
   </div>
 
   <!-- Arrow Icon for Reopening Sidebar -->

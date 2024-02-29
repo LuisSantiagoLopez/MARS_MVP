@@ -91,7 +91,7 @@ def stripe_webhook(request):
 
    return HttpResponse(status=200)
 
-@login_required
+@login_required(login_url = "/login/")
 def customer_portal(request):
    stripe.api_key = stripe_api_key
 
@@ -109,3 +109,15 @@ def customer_portal(request):
 
    # Redirect the user to the Stripe Customer Portal
    return redirect(session.url)
+
+@login_required(login_url = "/login/")
+def settings(request): 
+   user_payment = UserPayments.objects.get(app_user=request.user)
+
+   context = {
+      "user": request.user,
+      "payment_plan": user_payment.payment_plan,
+      
+   }
+
+   render(request, "settings.html")
