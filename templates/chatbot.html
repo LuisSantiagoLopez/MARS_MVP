@@ -192,14 +192,7 @@
     <div class="sidebar-close">
       <button onclick="toggleSidebar()">Close</button>
     </div>
-    <div class="session-item" onclick="createSession()">New Chat +</div>
-    {% for session in chat_sessions %}
-      <div class="session-item" onclick="changeSession('{{ session.id }}')">
-        Chat {{ session.id }}
-        <span class="delete-session" onclick="deleteSession(event, '{{ session.id }}')">&#x1F5D1;</span> <!-- Trash can icon -->
-      </div>
-    {% endfor %}
-
+    
     <!-- Inside the sidebar, at the bottom -->
     <div class="user-menu">
       <button class="btn user-menu-button dropdown-toggle" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -210,6 +203,14 @@
         <li><a class="dropdown-item" href="#">Configuraciones</a></li>
       </ul>
     </div>
+
+    <div class="session-item" onclick="createSession()">New Chat +</div>
+    {% for session in chat_sessions %}
+      <div class="session-item" onclick="changeSession('{{ session.id }}')">
+        Chat {{ session.id }}
+        <span class="delete-session" onclick="deleteSession(event, '{{ session.id }}')">&#x1F5D1;</span> <!-- Trash can icon -->
+      </div>
+    {% endfor %}
   </div>
 
   <!-- Arrow Icon for Reopening Sidebar -->
