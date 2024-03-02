@@ -323,12 +323,12 @@
     sidebar.style.display = 'block';
     reopenSidebar.style.display = 'none'; // Hide arrow when sidebar is open
     chatContainer.classList.remove('sidebar-closed');
-    messageForm.classList.add('sidebar-opened-form');
+    messageForm.classList.toggle('sidebar-opened-form');
   } else {
     sidebar.style.display = 'none';
     reopenSidebar.style.display = 'flex'; // Show arrow when sidebar is closed
     chatContainer.classList.add('sidebar-closed');
-    messageForm.classList.remove('sidebar-opened-form');
+    messageForm.classList.toggle('sidebar-opened-form');
   }
   }
 
