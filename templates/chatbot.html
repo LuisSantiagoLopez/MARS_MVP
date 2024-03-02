@@ -313,10 +313,12 @@
   const message_input = document.querySelector('.message-input');
   const file_input = document.querySelector('#file-input');
 
+  const messageForm = document.getElementById('message-form');
+  messageForm.classList.add('sidebar-opened-form');
+
   function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   const reopenSidebar = document.getElementById('reopen-sidebar');
-  const messageForm = document.getElementById('message-form');
 
   if (sidebar.style.display === 'none') {
     sidebar.style.display = 'block';
