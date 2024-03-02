@@ -3,10 +3,6 @@
 {% block styles %}
 
 <style>
-  /* body,
-  html {
-    height: 100%;
-  } */
 
   .sidebar {
     width: 300px;
@@ -95,12 +91,6 @@
   border-radius: 0 5px 5px 0; /* Rounded corners on the right side */
   z-index: 1000; /* Ensure it's above other content */
   }
-
-  /*.chat-messages {
-    height: calc(100vh - 150px);
-    overflow-y: auto;
-    }
-  */
 
   .messages-box {
     flex-grow: 1;
@@ -337,10 +327,12 @@
     sidebar.style.display = 'block';
     reopenSidebar.style.display = 'none'; // Hide arrow when sidebar is open
     chatContainer.classList.remove('sidebar-closed');
+    message_form.classList.remove('sidebar-closed');
   } else {
     sidebar.style.display = 'none';
     reopenSidebar.style.display = 'flex'; // Show arrow when sidebar is closed
     chatContainer.classList.add('sidebar-closed');
+    message_form.classList.add('sidebar-closed');
   }
   }
 
