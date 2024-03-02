@@ -131,13 +131,13 @@
     right: 0;
     padding: 10px;
     background-color: #f8f9fa;
-    left: 300px;
+    width: 100%; 
     z-index: 100;
     transition: left 0.3s;
   }
-
-  .message-form .sidebar-closed {
-    left: 0; 
+  
+  .message-form .sidebar-opened-form {
+    left: 300px !important; 
   }
 
   .message-input {
@@ -181,8 +181,8 @@
     width: 30%;
   }
 
-  .message-form {
-    left: 30%
+  .message-form .sidebar-opened-form {
+    left: 30% !important; 
   }
 
   .sidebar-closed .message-form {
@@ -327,12 +327,12 @@
     sidebar.style.display = 'block';
     reopenSidebar.style.display = 'none'; // Hide arrow when sidebar is open
     chatContainer.classList.remove('sidebar-closed');
-    message_form.classList.remove('sidebar-closed');
+    message_form.classList.add('sidebar-opened-form');
   } else {
     sidebar.style.display = 'none';
     reopenSidebar.style.display = 'flex'; // Show arrow when sidebar is closed
     chatContainer.classList.add('sidebar-closed');
-    message_form.classList.add('sidebar-closed');
+    message_form.classList.remove('sidebar-opened-form');
   }
   }
 
