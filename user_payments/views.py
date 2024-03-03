@@ -83,11 +83,24 @@ def stripe_webhook(request):
       user_payment.subscription_status = True
       user_payment.stripe_customer_id = customer
       user_payment.save()
-   elif event_type == 'invoice.paid':
-      print(0)
-   elif event_type == 'invoice.payment_failed':
+   
+   elif event_type in ['invoice.paid', 'invoice.payment_failed']:
+      invoice = event["data"]["object"]
+      customer_id = invoice["customer"]
+      user_payment = UserPayments.objects.get(stripe_customer_id=customer_id)
+      if event_type == 'invoice.paid':
+            user_payment.subscription_status = True
+      elif event_type == 'invoice.payment_failed':
+            user_payment.subscription_status = False
+      user_payment.save()         
+
+   elif event_type == 'customer.subscription.deleted':
+      subscription = event['data']['object']  # contains a stripe.Subscription
+      customer_id = subscription['customer']        
+      user_payment = UserPayments.objects.get(stripe_customer_id=customer_id)
       user_payment.subscription_status = False
       user_payment.save()
+      
    else:
       print(f"Unhandled event type {event_type}")
 
