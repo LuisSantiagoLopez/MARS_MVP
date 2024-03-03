@@ -45,12 +45,13 @@ def product_page(request):
 def payment_successful(request):
    stripe.api_key = stripe_api_key
 
-   user_payment = UserPayments.objects.create(app_user=request.user, stripe_checkout_id=checkout_session_id)
-   user_payment.save()
-
    checkout_session_id = request.GET.get("session_id", None)
    session = stripe.checkout.Session.retrieve(checkout_session_id)
    customer = stripe.Customer.retrieve(session.customer)
+
+   user_payment = UserPayments.objects.create(app_user=request.user, stripe_checkout_id=checkout_session_id)
+   user_payment.save()
+
    return render(request, "user_payment/payment_successful.html", {"customer": customer})
 
 def payment_cancelled(request):
