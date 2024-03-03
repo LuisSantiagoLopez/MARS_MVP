@@ -213,76 +213,6 @@
       </ul>
     </div>
 
-    <!-- Modals -->
-
-    <!--Modal 1: Mi perfil-->
-        <div class="modal fade" id="planModal" tabindex="-1" aria-labelledby="planModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="planModalLabel">Escoge tu plan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <div class="row">
-                  <!-- Plus Plan -->
-                  <div class="col-md-6">
-                    <div class="plan-card">
-                      <h3 class="plan-title">Plus</h3>
-                      <p class="plan-price">MXN $150/mes</p>
-                      <!--Form de stripe p1-->
-                      
-                      <form id="paymentForm1" action="{% url 'product_page' %}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" id="option_id" name="option_id" value="" />
-                        
-                        <button type="button" class="btn btn-success" onclick="setOption(1)">Acceder a MARS</button>
-                      </form>
-
-                      <ul class="plan-features">
-                        <li>Access to GPT-4, our most capable model</li>
-                        <li>Browse, create, and use GPTs</li>
-                        <li>Access to additional tools like DALL·E, Browsing, Advanced Data Analysis and more</li>
-                      </ul>
-                      <div class="plan-footer">
-                        <a href="{% url 'customer_portal' %}" class="manage-link">Manejar mi suscripción.</a>
-                        <a href="#" class="billing-link">Ayuda con un problema de pagos.</a>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Team Plan -->
-                  <div class="col-md-6">
-                    <div class="plan-card">
-                      <h3 class="plan-title">Pro</h3>
-                      <p class="plan-price">$1,000/mes</p>
-
-                      <!--Form de stripe p2-->
-                      <form id="paymentForm" action="{% url 'product_page' %}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" id="option_id" name="option_id" value="" />
-                        
-                        <button type="button" class="btn btn-primary" onclick="setOption(2)">Crece tu negocio con MARS</button>
-                    
-                      <ul class="plan-features">
-                        <li>Everything in Plus, and:</li>
-                        <li>Higher message caps on GPT-4 and tools like DALL·E, Browsing, Advanced Data Analysis, and more</li>
-                        <li>Create and share GPTs with your workspace</li>
-                        <li>Admin console for workspace management</li>
-                        <li>Team data excluded from training by default. <a href="#">Learn more</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--Fin Modal 1-->
-
     <div class="session-item" onclick="createSession()">New Chat +</div>
     {% for session in chat_sessions %}
       <div class="session-item" onclick="changeSession('{{ session.id }}')">
@@ -371,6 +301,76 @@
 
   </form>
 </div>
+
+    <!-- Modals -->
+
+    <!--Modal 1: Mi perfil-->
+        <div class="modal fade" id="planModal" tabindex="-1" aria-labelledby="planModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="planModalLabel">Escoge tu plan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <!-- Plus Plan -->
+                  <div class="col-md-6">
+                    <div class="plan-card">
+                      <h3 class="plan-title">Plus</h3>
+                      <p class="plan-price">MXN $150/mes</p>
+                      <!--Form de stripe p1-->
+                      
+                      <form id="paymentForm1" action="{% url 'product_page' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" id="option_id" name="option_id" value="" />
+                        
+                        <button type="button" class="btn btn-success" onclick="setOption(1)">Acceder a MARS</button>
+                      </form>
+
+                      <ul class="plan-features">
+                        <li>Access to GPT-4, our most capable model</li>
+                        <li>Browse, create, and use GPTs</li>
+                        <li>Access to additional tools like DALL·E, Browsing, Advanced Data Analysis and more</li>
+                      </ul>
+                      <div class="plan-footer">
+                        <a href="{% url 'customer_portal' %}" class="manage-link">Manejar mi suscripción.</a>
+                        <a href="#" class="billing-link">Ayuda con un problema de pagos.</a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Team Plan -->
+                  <div class="col-md-6">
+                    <div class="plan-card">
+                      <h3 class="plan-title">Pro</h3>
+                      <p class="plan-price">$1,000/mes</p>
+
+                      <!--Form de stripe p2-->
+                      <form id="paymentForm" action="{% url 'product_page' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" id="option_id" name="option_id" value="" />
+                        
+                        <button type="button" class="btn btn-primary" onclick="setOption(2)">Crece tu negocio con MARS</button>
+                    
+                      <ul class="plan-features">
+                        <li>Everything in Plus, and:</li>
+                        <li>Higher message caps on GPT-4 and tools like DALL·E, Browsing, Advanced Data Analysis, and more</li>
+                        <li>Create and share GPTs with your workspace</li>
+                        <li>Admin console for workspace management</li>
+                        <li>Team data excluded from training by default. <a href="#">Learn more</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    <!--Fin Modal 1-->
 {% endblock %}
 
 {% block scripts %}
