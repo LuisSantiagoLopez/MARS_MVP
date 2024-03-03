@@ -74,7 +74,7 @@ def stripe_webhook(request):
    event_type = event["type"]
 
    if event_type == "checkout.session.completed":
-      session = event_type["data"]["object"]
+      session = event["data"]["object"]
       session_id = session.get("id")
       customer = session.get("customer")
       time.sleep(15)
@@ -85,7 +85,7 @@ def stripe_webhook(request):
       user_payment.save()
    
    elif event_type in ['invoice.paid', 'invoice.payment_failed']:
-      session = event_type["data"]["object"]
+      session = event["data"]["object"]
       session_id = session.get("id")
       customer = session.get("customer")
       user_payment = UserPayments.objects.get(stripe_customer_id=customer)
@@ -96,7 +96,7 @@ def stripe_webhook(request):
       user_payment.save()         
 
    elif event_type == 'customer.subscription.deleted':
-      session = event_type["data"]["object"]
+      session = event["data"]["object"]
       session_id = session.get("id")
       customer = session.get("customer")
       user_payment = UserPayments.objects.get(stripe_customer_id=customer)   
