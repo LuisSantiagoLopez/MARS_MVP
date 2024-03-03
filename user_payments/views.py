@@ -55,7 +55,7 @@ def payment_successful(request):
    return redirect('/chatbot/')
 
 def payment_cancelled(request):
-   return render(request, "user_payment/payment_cancelled.html")
+   return redirect('/chatbot/')
 
 @csrf_exempt
 def stripe_webhook(request):
@@ -74,7 +74,7 @@ def stripe_webhook(request):
    event_type = event["type"]
 
    if event_type == "checkout.session.completed":
-      session = event["data"]["object"]
+      session = event_type["data"]["object"]
       session_id = session.get("id")
       customer = session.get("customer")
       time.sleep(15)
@@ -85,9 +85,10 @@ def stripe_webhook(request):
       user_payment.save()
    
    elif event_type in ['invoice.paid', 'invoice.payment_failed']:
-      invoice = event["data"]["object"]
-      customer_id = invoice["customer"]
-      user_payment = UserPayments.objects.get(stripe_customer_id=customer_id)
+      session = event_type["data"]["object"]
+      session_id = session.get("id")
+      customer = session.get("customer")
+      user_payment = UserPayments.objects.get(stripe_customer_id=customer)
       if event_type == 'invoice.paid':
             user_payment.subscription_status = True
       elif event_type == 'invoice.payment_failed':
@@ -95,12 +96,13 @@ def stripe_webhook(request):
       user_payment.save()         
 
    elif event_type == 'customer.subscription.deleted':
-      subscription = event['data']['object']  # contains a stripe.Subscription
-      customer_id = subscription['customer']        
-      user_payment = UserPayments.objects.get(stripe_customer_id=customer_id)
+      session = event_type["data"]["object"]
+      session_id = session.get("id")
+      customer = session.get("customer")
+      user_payment = UserPayments.objects.get(stripe_customer_id=customer)   
       user_payment.subscription_status = False
       user_payment.save()
-      
+
    else:
       print(f"Unhandled event type {event_type}")
 
