@@ -96,13 +96,12 @@ def stripe_webhook(request):
 @login_required(login_url = "/login/")
 def customer_portal(request):
 
-   # Retrieve the Stripe Customer ID from your database
-   user_payment = UserPayments.objects.get(app_user=request.user)
+   payment_instance = UserPayments.objects.filter(app_user=request.user).order_by("-created_at").first()
 
-   if user_payment:
+   if payment_instance:
       stripe.api_key = stripe_api_key
 
-      checkout_session_id = user_payment.stripe_checkout_id
+      checkout_session_id = payment_instance.stripe_checkout_id
       session = stripe.checkout.Session.retrieve(checkout_session_id)
       customer = stripe.Customer.retrieve(session.customer)
 
