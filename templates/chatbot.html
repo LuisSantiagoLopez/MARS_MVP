@@ -207,9 +207,15 @@
         {{ user.username }}
       </button>
       <ul class="dropdown-menu dropdown-menu-end drop-up" aria-labelledby="userMenuButton">
-        <li><a class="dropdown-item" href="#">Mi plan</a></li>
+        
+        <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#planModal">Mi plan</a></li>
+        <li><a class="dropdown-item" href="#">Configuraciones</a></li>
+      </ul>
+    </div>
 
-        <!--Modal 1: Mi perfil-->
+    <!-- Modals -->
+
+    <!--Modal 1: Mi perfil-->
         <div class="modal fade" id="planModal" tabindex="-1" aria-labelledby="planModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -260,12 +266,7 @@
             </div>
           </div>
         </div>
-
-        <!---->
-
-        <li><a class="dropdown-item" href="#">Configuraciones</a></li>
-      </ul>
-    </div>
+        <!--Fin Modal 1-->
 
     <div class="session-item" onclick="createSession()">New Chat +</div>
     {% for session in chat_sessions %}
