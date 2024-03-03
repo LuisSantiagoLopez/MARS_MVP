@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import Chat, ChatSession
 from core_functions_mars.chat import Assistant
 from django.contrib.auth.decorators import login_required
+from user_payments.models import UserPayments
+from django.contrib import messages
 
 
 @login_required(login_url = "/login/")
@@ -19,6 +21,14 @@ def chatbot(request, session_id=None):
 
     # Extraigo el usuario
     user = request.user
+
+    # Verifica si no realizó su pago
+    user_payment = UserPayments.object.filter(user=user).order_by("-created_at").first()
+
+    if not user_payment or user_payment.subscription_status == False: 
+        messages.add_message(request, messages.INFO, "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'.")
+        return redirect("/chatbot/")
+
 
     # Filtro de todas las sesiones para mostrarlas en el frontend   
     all_chat_sessions = ChatSession.objects.filter(user=user)

@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from user_payments.models import UserPayments
 from dotenv import load_dotenv
+from django.contrib import messages
 import stripe
 import time
 import os
@@ -36,8 +37,6 @@ def product_page(request):
            success_url = request.build_absolute_uri('payment_successful') + '?session_id={CHECKOUT_SESSION_ID}',
            cancel_url = request.build_absolute_uri('payment_cancelled'),
         )
-      
-      UserPayments.objects.create(app_user=request.user)
 
       return redirect(checkout_session.url, code=303)
   
@@ -45,12 +44,13 @@ def product_page(request):
 
 def payment_successful(request):
    stripe.api_key = stripe_api_key
+
+   user_payment = UserPayments.objects.create(app_user=request.user, stripe_checkout_id=checkout_session_id)
+   user_payment.save()
+
    checkout_session_id = request.GET.get("session_id", None)
    session = stripe.checkout.Session.retrieve(checkout_session_id)
    customer = stripe.Customer.retrieve(session.customer)
-   user_payment = UserPayments.objects.get(app_user=request.user)
-   user_payment.stripe_checkout_id = checkout_session_id
-   user_payment.save()
    return render(request, "user_payment/payment_successful.html", {"customer": customer})
 
 def payment_cancelled(request):
@@ -77,15 +77,16 @@ def stripe_webhook(request):
       session_id = session.get("id")
       customer = session.get("customer")
       time.sleep(15)
-      user_payment = UserPayments.objects.get(stripe_checkout_id=session_id)
       line_items = stripe.checkout.Session.list_line_items(session_id, limit=1)
-      user_payment.payment_bool = True
+      user_payment = UserPayments.objects.get(stripe_checkout_id=session_id)
+      user_payment.subscription_status = True
       user_payment.stripe_customer_id = customer
       user_payment.save()
    elif event_type == 'invoice.paid':
       print(0)
    elif event_type == 'invoice.payment_failed':
-      print(0)
+      user_payment.subscription_status = False
+      user_payment.save()
    else:
       print(f"Unhandled event type {event_type}")
 
@@ -93,22 +94,29 @@ def stripe_webhook(request):
 
 @login_required(login_url = "/login/")
 def customer_portal(request):
-   stripe.api_key = stripe_api_key
 
    # Retrieve the Stripe Customer ID from your database
    user_payment = UserPayments.objects.get(app_user=request.user)
-   checkout_session_id = user_payment.stripe_checkout_id
-   session = stripe.checkout.Session.retrieve(checkout_session_id)
-   customer = stripe.Customer.retrieve(session.customer)
 
-   # Create a session for the Stripe Customer Portal
-   session = stripe.billing_portal.Session.create(
-      customer=customer,
-      return_url=request.build_absolute_uri('/chatbot/'),  # Specify where the user should be redirected after leaving the portal
-   )
+   if user_payment:
+      stripe.api_key = stripe_api_key
 
-   # Redirect the user to the Stripe Customer Portal
-   return redirect(session.url)
+      checkout_session_id = user_payment.stripe_checkout_id
+      session = stripe.checkout.Session.retrieve(checkout_session_id)
+      customer = stripe.Customer.retrieve(session.customer)
+
+      # Create a session for the Stripe Customer Portal
+      session = stripe.billing_portal.Session.create(
+         customer=customer,
+         return_url=request.build_absolute_uri('/chatbot/'),  # Specify where the user should be redirected after leaving the portal
+      )
+
+      # Redirect the user to the Stripe Customer Portal
+      return redirect(session.url)
+   
+   else: 
+      messages.add_message(request, messages.INFO, "Todavía no has realizado un pago. Suscríbete y podrás acceder al portal de pagos, ¡gracias!")
+      return redirect("/chatbot/")
 
 @login_required(login_url = "/login/")
 def settings(request): 
@@ -117,7 +125,6 @@ def settings(request):
    context = {
       "user": request.user,
       "payment_plan": user_payment.payment_plan,
-      
    }
 
    render(request, "settings.html")

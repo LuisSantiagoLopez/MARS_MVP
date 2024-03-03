@@ -372,6 +372,15 @@
           </div>
         </div>
     <!--Fin Modal 1-->
+
+    <!-- Mensajes de error -->
+    {% if messages %}
+    <div id="message-popup" style="display:none;">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -396,6 +405,18 @@
     document.getElementById('option_id').value = optionId;
     document.getElementById('paymentForm').submit();
   }
+
+  window.addEventListener('load', () => {
+    const messagePopup = document.getElementById('message-popup');
+    if (messagePopup) {
+        const messageText = messagePopup.textContent.trim();
+        if (messageText) {
+            // Using a simple alert as an example
+            alert(messageText);
+            // For a custom modal/pop-up, you would show it here instead
+        }
+    }
+  });
 
   function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
