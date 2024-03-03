@@ -325,7 +325,7 @@
                         {% csrf_token %}
                         <input type="hidden" id="option_id" name="option_id" value="" />
                         
-                        <button type="button" class="btn btn-success" onclick="setOption(1)">Acceder a MARS</button>
+                        <button type="button" class="btn btn-primary" onclick="setOption(1)">Acceder a MARS</button>
                       </form>
 
                       <ul class="plan-features">
@@ -347,7 +347,7 @@
                       <p class="plan-price">$1,000/mes</p>
 
                       <!--Form de stripe p2-->
-                      <form id="paymentForm" action="{% url 'product_page' %}" method="POST">
+                      <form id="paymentForm2" action="{% url 'product_page' %}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" id="option_id" name="option_id" value="" />
                         
@@ -391,6 +391,11 @@
 
   const messageForm = document.getElementById('message-form');
   messageForm.classList.add('sidebar-opened-form');
+
+  function setOption(optionId) {
+    document.getElementById('option_id').value = optionId;
+    document.getElementById('paymentForm').submit();
+  }
 
   function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
