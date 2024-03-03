@@ -22,14 +22,6 @@ def chatbot(request, session_id=None):
     # Extraigo el usuario
     user = request.user
 
-    # Verifica si no realizó su pago
-    payment_instance = UserPayments.objects.filter(app_user=user).order_by("-created_at").first()
-
-    if not payment_instance or payment_instance.subscription_status == False: 
-        messages.add_message(request, messages.INFO, "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'.")
-        return redirect("/chatbot/")
-
-
     # Filtro de todas las sesiones para mostrarlas en el frontend   
     all_chat_sessions = ChatSession.objects.filter(user=user)
     # Inicio historial de chats vacío por si la conversación no tiene chats 
@@ -55,6 +47,14 @@ def chatbot(request, session_id=None):
 
     # Si el tipo de request es "POST", interactúo con la clase assistants para responder
     if request.method == "POST":
+
+        # Verifica si no realizó su pago
+        payment_instance = UserPayments.objects.filter(app_user=user).order_by("-created_at").first()
+
+        if not payment_instance or payment_instance.subscription_status == False: 
+            messages.add_message(request, messages.INFO, "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'.")
+            return redirect("/chatbot/")
+
         # Extraigo el texto y la posible imagen que el usuario mandó
         user_message = request.POST.get("message")
         user_input_image = request.FILES.get('image', None)
