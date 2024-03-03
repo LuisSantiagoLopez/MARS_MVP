@@ -23,7 +23,7 @@ def chatbot(request, session_id=None):
     user = request.user
 
     # Verifica si no realizó su pago
-    user_payment = UserPayments.objects.filter(user=user).order_by("-created_at").first()
+    user_payment = UserPayments.objects.filter(app_user=user).order_by("-created_at").first()
 
     if not user_payment or user_payment.subscription_status == False: 
         messages.add_message(request, messages.INFO, "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'.")
