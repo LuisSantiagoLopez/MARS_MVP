@@ -230,7 +230,15 @@
                     <div class="plan-card">
                       <h3 class="plan-title">Plus</h3>
                       <p class="plan-price">MXN $150/mes</p>
-                      <button class="btn btn-secondary">Acceder a MARS</button>
+                      <!--Form de stripe p1-->
+                      
+                      <form id="paymentForm1" action="{% url 'product_page' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" id="option_id" name="option_id" value="" />
+                        
+                        <button type="button" class="btn btn-success" onclick="setOption(1)">Acceder a MARS</button>
+                      </form>
+
                       <ul class="plan-features">
                         <li>Access to GPT-4, our most capable model</li>
                         <li>Browse, create, and use GPTs</li>
@@ -247,8 +255,15 @@
                   <div class="col-md-6">
                     <div class="plan-card">
                       <h3 class="plan-title">Pro</h3>
-                      <p class="plan-price">Aumentar publicaciones</p>
-                      <button class="btn btn-primary">Add Team workspace</button>
+                      <p class="plan-price">$1,000/mes</p>
+
+                      <!--Form de stripe p2-->
+                      <form id="paymentForm" action="{% url 'product_page' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" id="option_id" name="option_id" value="" />
+                        
+                        <button type="button" class="btn btn-primary" onclick="setOption(2)">Crece tu negocio con MARS</button>
+                    
                       <ul class="plan-features">
                         <li>Everything in Plus, and:</li>
                         <li>Higher message caps on GPT-4 and tools like DALL·E, Browsing, Advanced Data Analysis, and more</li>
