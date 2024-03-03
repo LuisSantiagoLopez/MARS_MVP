@@ -220,7 +220,7 @@
           <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="planModalLabel">Upgrade your plan</h5>
+                <h5 class="modal-title" id="planModalLabel">Escoge tu plan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
@@ -229,16 +229,16 @@
                   <div class="col-md-6">
                     <div class="plan-card">
                       <h3 class="plan-title">Plus</h3>
-                      <p class="plan-price">USD $20/month</p>
-                      <button class="btn btn-secondary">Your current plan</button>
+                      <p class="plan-price">MXN $150/mes</p>
+                      <button class="btn btn-secondary">Acceder a MARS</button>
                       <ul class="plan-features">
                         <li>Access to GPT-4, our most capable model</li>
                         <li>Browse, create, and use GPTs</li>
                         <li>Access to additional tools like DALL·E, Browsing, Advanced Data Analysis and more</li>
                       </ul>
                       <div class="plan-footer">
-                        <a href="#" class="manage-link">Manage my subscription</a>
-                        <a href="#" class="billing-link">Need help with a billing issue?</a>
+                        <a href="{% url  'customer-portal' %}" class="manage-link">Manejar mi suscripción.</a>
+                        <a href="#" class="billing-link">Ayuda con un problema de pagos.</a>
                       </div>
                     </div>
                   </div>
@@ -246,8 +246,8 @@
                   <!-- Team Plan -->
                   <div class="col-md-6">
                     <div class="plan-card">
-                      <h3 class="plan-title">Team</h3>
-                      <p class="plan-price">USD $25 per person/month</p>
+                      <h3 class="plan-title">Pro</h3>
+                      <p class="plan-price">Aumentar publicaciones</p>
                       <button class="btn btn-primary">Add Team workspace</button>
                       <ul class="plan-features">
                         <li>Everything in Plus, and:</li>
@@ -272,7 +272,7 @@
     {% for session in chat_sessions %}
       <div class="session-item" onclick="changeSession('{{ session.id }}')">
         Chat {{ session.id }}
-        <span class="delete-session" onclick="deleteSession(event, '{{ session.id }}')">&#x1F5D1;</span> <!-- Trash can icon -->
+        <span class="delete-session" onclick="deleteSession(event, '{{ session.id }}')">𝗫</span> <!-- Trash can icon -->
       </div>
     {% endfor %}
   </div>
