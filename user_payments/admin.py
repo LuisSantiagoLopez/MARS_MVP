@@ -14,8 +14,5 @@ class UserPaymentsAdmin(admin.ModelAdmin):
             return self.readonly_fields + ('app_user', 'stripe_customer')
         return self.readonly_fields
 
-# Unregister the model if it was previously registered
-admin.site.unregister(UserPayments)
-
 # Register the model with the custom admin class
 admin.site.register(UserPayments, UserPaymentsAdmin)
