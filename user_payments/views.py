@@ -14,17 +14,19 @@ load_dotenv()
 stripe_api_key = os.getenv("STRIPE_API_KEY_TEST")
 
 @login_required(login_url = "/login/")
+#API ENDPOINT FOR THE FRONTEND'S MODAL
 def product_page(request):
-  stripe.api_key = stripe_api_key
-  price_id = None
+  if request.method == "POST":
 
-  if request.method == "POST": 
+      stripe.api_key = stripe_api_key
       option_id = request.POST.get("option_id")
       if option_id == "1":
           price_id = "price_1Of2mbCgimrkAXdjv59KSL0K"
       if option_id == "2": 
           price_id = "price_1Of2n0CgimrkAXdjn9dXOIVO"
 
+
+      #CHECKOUT SESSION FROM STRIPE'S API ENDPOINTS. REDIRECTION TO STRIPE'S URL NECESSARY AFTER CREATING THE SESSION. 
       checkout_session = stripe.checkout.Session.create(
           payment_method_types = ["card"],
           line_items = [
@@ -38,81 +40,130 @@ def product_page(request):
            cancel_url = request.build_absolute_uri('payment_cancelled'),
         )
 
+      #SENDING THIS OBJECT TO STRIPE'S URL WITH A REQUEST THAT CONTAINS THE PAYLOAD WE JUST CREATED WITH THE PRICE ID OF THE PRODUCT 
       return redirect(checkout_session.url, code=303)
-  
-  return render(request, "user_payment/product_page.html") 
 
+#IF THE PAYMENT WAS SUCCESSFUL THEY'LL GET REDIRECTED TO THIS VIEW AS PER STRIPE CALL. 
+#API CALL FROM STRIPE
 def payment_successful(request):
    stripe.api_key = stripe_api_key
-
    checkout_session_id = request.GET.get("session_id", None)
 
+   #NOW WE DELETE ANY OTHER PREVIOUS SUBSCRIPTION THE USER HAD 
+   check_subscription = UserPayments.objects.filter(app_user=request.user, subscription_status=True).last()
+
+   if check_subscription:
+      subscription_id = check_subscription.stripe_subscription_id
+      stripe.Subscription.delete(subscription_id)
+      check_subscription.subscription_status = False
+
+   #WE CREATE THE USER PAYMENT INSTANCE ON THE DATABASE WITH THE USER AND THE CHECKOUT ID REDIRECTED BY STRIPE
    user_payment = UserPayments.objects.create(app_user=request.user, stripe_checkout_id=checkout_session_id)
    user_payment.save()
 
+   #INSTEAD OF SENDING THE USER TO AN ADDITIONAL WEBSITE, WE'LL REDRECT THEM TO THE CHATBOT WITH A MESSAGE THAT IS ALSO EMBEDDED INSIDE THE CHATBOT.HTML TEMPLATE
    messages.add_message(request, messages.INFO, "Gracias por volverte parte de nuestra comunidad, ya puedes chatear con MARS o crear más publicaciones.")
-
    return redirect('/chatbot/')
 
+#INSTEAD OF GOING FORWARD WITH THE PAYMENT, THE PAYMENT GOT CANCELLED
+#API CALL FROM STRIPE
 def payment_cancelled(request):
+   messages.add_message(request, messages.INFO, "Ocurrió un error con su tarjeta. Si necesita asistencia, contáctenos.")
    return redirect('/chatbot/')
+
 
 @csrf_exempt
+#API ENDPOINT STRIPE CALLS 
 def stripe_webhook(request):
-   stripe.api_key = stripe_api_key
+   #SENDING A REQUEST TO THE STRIPE WEBHOOK FOR INTERNAL PROCESSING
+   STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
    time.sleep(10)
    payload = request.body
    signature_header = request.META["HTTP_STRIPE_SIGNATURE"]
    event = None
+
+   #CONNECTION TO THE STRIPE WEBHOOK ENDPOINT WITH OUR STRIPE WEBHOOK SECRET
    try:
-      event = stripe.Webhook.construct_event(payload, signature_header, stripe_api_key)
+      event = stripe.Webhook.construct_event(payload, signature_header, STRIPE_WEBHOOK_SECRET)
+
+   #EXCEPTION HANDLING
    except ValueError as e: 
+      #INVALID PAYLOAD
       return HttpResponse(status=400)
    except stripe.error.SignatureVerificationError as e: 
+      #INVALID SIGNATURE
       return HttpResponse(status=400) 
    
+   ## EVENT HANDLING ##
    event_type = event["type"]
+   #EXTRACTING THE EVENT OBJECT
+   session = event["data"]["object"]
+   session_id = session.get("id")
+   customer = session.get("customer")
 
+   #EXTRACTING DATABASE INSTANCE THROUGH THE SESSION ID CREATED IF THE PAYMENT WAS SUCCESSFUL 
+   user_payment = UserPayments.objects.get(stripe_checkout_id=session_id)
+
+   #FIRST CHECKOUT OPTION WEBHOOK
    if event_type == "checkout.session.completed":
-      session = event["data"]["object"]
-      session_id = session.get("id")
-      customer = session.get("customer")
+      #WAITING TIME FOR THE WEBHOOK TO REACT
       time.sleep(15)
+      #VERIFYING IF THE REQUEST WAS SUCCESSFUL
+
+      #NO USE CASE YET, BUT NICE TO HAVE THE ITEMS LISTED IN A DATA STRUCTURE
       line_items = stripe.checkout.Session.list_line_items(session_id, limit=1)
+
+      #CODE OF THE SUBSCRIPTION NUMBER THEY CHOSE 
+      subscription_id_bought = line_items.data[0].price.product
+
+      #SAVING DATA TO THE DATBASE
       user_payment = UserPayments.objects.get(stripe_checkout_id=session_id)
+
+      #SUBSCRIPTION TYPE DECLARATION
+      user_payment.subscription_type = subscription_id_bought
+
+      #CHANGING STATUS OF SUBSCRIPTION WHICH THEN BLOCKS MESSAGE SENT IN CHATBOT/VIEWS
       user_payment.subscription_status = True
-      user_payment.stripe_customer_id = customer
+
+      #SAVING THIS CUSTOMER AFTER THE PAYMENT SUCCEEDS  
+      user_payment.stripe_customer = customer
+      
+      #SAVING CUSTOMER AND STATUS FOR LATER PROCESSING
       user_payment.save()
    
+   #MONTHLY INVOICE TO THE USER AFTER PAYMENT OR IF PAYMENT FAILED.
    elif event_type in ['invoice.paid', 'invoice.payment_failed']:
-      session = event["data"]["object"]
-      session_id = session.get("id")
-      customer = session.get("customer")
-      user_payment = UserPayments.objects.get(stripe_customer_id=customer)
+      #EXTRACTING THE USER PAYMENT INSTANCE FROM THE DATBASE
+      user_payment = UserPayments.objects.get(stripe_customer=customer)
+
+      #CHANGING STATUS OF SUBSCRIPTION WHICH THEN BLOCKS MESSAGE SENT IN CHATBOT/VIEWS
       if event_type == 'invoice.paid':
             user_payment.subscription_status = True
       elif event_type == 'invoice.payment_failed':
             user_payment.subscription_status = False
       user_payment.save()         
 
+   #IF THE SUBSCRIPTION ENDS BECAUSE THE USER CANCELLED, WE WILL ALSO STOP PROVIDING ACCESS TO THE PLATFORM. STRIPE COLLECTS DATA. 
    elif event_type == 'customer.subscription.deleted':
-      session = event["data"]["object"]
-      session_id = session.get("id")
-      customer = session.get("customer")
-      user_payment = UserPayments.objects.get(stripe_customer_id=customer)   
+
+      #CANCEL THEIR SUBSCRIPTION AND STOP GIVING THEM ACCESS 
       user_payment.subscription_status = False
       user_payment.save()
 
+   #RARE - IF THE WEBHOOK ISN'T FOUND, WE WON'T HANDLE IT. 
    else:
       print(f"Unhandled event type {event_type}")
 
    return HttpResponse(status=200)
 
 @login_required(login_url = "/login/")
+# THE CUSTOMER PORTAL FOR CANCELLATIONS, API CALL TO STRIPE.
 def customer_portal(request):
 
+   #WE TAKE THE LAST INSTANCE FROM THAT USER. 
    payment_instance = UserPayments.objects.filter(app_user=request.user).order_by("-created_at").first()
 
+   #WE PASS THE DATBASE DATA TO STRIPE AND CALL THEIR URL 
    if payment_instance:
       stripe.api_key = stripe_api_key
 
@@ -120,19 +171,21 @@ def customer_portal(request):
       session = stripe.checkout.Session.retrieve(checkout_session_id)
       customer = stripe.Customer.retrieve(session.customer)
 
-      # Create a session for the Stripe Customer Portal
+      #CREATE SESSION FOR STRIPE'S PORTAL URL ENDPOINT. USERS RETURN TO CHATBOT AFTER THEY FINISH.
       session = stripe.billing_portal.Session.create(
          customer=customer,
-         return_url=request.build_absolute_uri('/chatbot/'),  # Specify where the user should be redirected after leaving the portal
+         return_url=request.build_absolute_uri('/chatbot/'), 
       )
 
-      # Redirect the user to the Stripe Customer Portal
+      #REDIRECT THE USER TO STRIPE'S URL. 
       return redirect(session.url)
    
+   #IF USER HASN'T PAID THEY CAN'T PROCEED.
    else: 
       messages.add_message(request, messages.INFO, "Todavía no has realizado un pago. Suscríbete y podrás acceder al portal de pagos, ¡gracias!")
       return redirect("/chatbot/")
 
+### IMPORTANT: HANDLE THIS SETTINGS PAGE AS AN API CALL THROUGH THE CHATBOT TEMPLATE
 @login_required(login_url = "/login/")
 def settings(request): 
    user_payment = UserPayments.objects.get(app_user=request.user)
