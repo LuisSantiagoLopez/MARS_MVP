@@ -30,7 +30,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["marsai.tech", "www.marsai.tech", "64.23.175.121"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
