@@ -77,7 +77,6 @@ def payment_cancelled(request):
 def stripe_webhook(request):
    #SENDING A REQUEST TO THE STRIPE WEBHOOK FOR INTERNAL PROCESSING
    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
-   time.sleep(10)
    payload = request.body
    signature_header = request.META["HTTP_STRIPE_SIGNATURE"]
    event = None
