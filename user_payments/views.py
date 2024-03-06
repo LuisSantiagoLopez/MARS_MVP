@@ -6,7 +6,6 @@ from user_payments.models import UserPayments
 from dotenv import load_dotenv
 from django.contrib import messages
 import stripe
-import time
 import os
 
 
@@ -75,16 +74,15 @@ def payment_cancelled(request):
 @csrf_exempt
 #API ENDPOINT STRIPE CALLS 
 def stripe_webhook(request):
-   time.sleep(10)
    #SENDING A REQUEST TO THE STRIPE WEBHOOK FOR INTERNAL PROCESSING
-   STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+   webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
    payload = request.body
    signature_header = request.META["HTTP_STRIPE_SIGNATURE"]
    event = None
 
    #CONNECTION TO THE STRIPE WEBHOOK ENDPOINT WITH OUR STRIPE WEBHOOK SECRET
    try:
-      event = stripe.Webhook.construct_event(payload, signature_header, STRIPE_WEBHOOK_SECRET)
+      event = stripe.Webhook.construct_event(payload, signature_header, webhook_secret)
 
    #EXCEPTION HANDLING
    except ValueError as e: 
@@ -97,27 +95,25 @@ def stripe_webhook(request):
    ## EVENT HANDLING ##
    event_type = event["type"]
    #EXTRACTING THE EVENT OBJECT
-   session = event["data"]["object"]
-   session_id = session.get("id")
-   customer = session.get("customer")
+   subscription = event["data"]["object"]
+   subscription_id = subscription.get("subscription")
+   customer = subscription.get("customer")
 
    #EXTRACTING DATABASE INSTANCE THROUGH THE SESSION ID CREATED IF THE PAYMENT WAS SUCCESSFUL 
-   user_payment = UserPayments.objects.get(stripe_checkout_id=session_id)
+   user_payment = UserPayments.objects.get(stripe_checkout_id=subscription_id)
 
    #FIRST CHECKOUT OPTION WEBHOOK
    if event_type == "checkout.session.completed":
-      #WAITING TIME FOR THE WEBHOOK TO REACT
-      time.sleep(15)
       #VERIFYING IF THE REQUEST WAS SUCCESSFUL
 
       #NO USE CASE YET, BUT NICE TO HAVE THE ITEMS LISTED IN A DATA STRUCTURE
-      line_items = stripe.checkout.Session.list_line_items(session_id, limit=1)
+      line_items = stripe.checkout.Session.list_line_items(subscription_id, limit=1)
 
       #CODE OF THE SUBSCRIPTION NUMBER THEY CHOSE 
       subscription_id_bought = line_items.data[0].price.product
 
       #SAVING DATA TO THE DATBASE
-      user_payment = UserPayments.objects.get(stripe_checkout_id=session_id)
+      user_payment = UserPayments.objects.get(stripe_checkout_id=subscription_id)
 
       #SUBSCRIPTION TYPE DECLARATION
       user_payment.subscription_type = subscription_id_bought
