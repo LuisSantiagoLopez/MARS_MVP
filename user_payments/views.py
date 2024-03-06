@@ -105,7 +105,7 @@ def stripe_webhook(request):
    user_payment = UserPayments.objects.get(stripe_checkout_id=session_id)
 
    #FIRST CHECKOUT OPTION WEBHOOK
-   if event_type == "customer.subscription.created":
+   if event_type == "checkout.session.completed":
       #WAITING TIME FOR THE WEBHOOK TO REACT
       time.sleep(15)
       #VERIFYING IF THE REQUEST WAS SUCCESSFUL
