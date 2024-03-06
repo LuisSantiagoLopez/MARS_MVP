@@ -28,7 +28,7 @@ SECRET_KEY = "insecure-iih-w^v1ij*k+ibfg(r#f=(j2)4hm!_%kr!r-rowno$2y+o)!2"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["marsai.tech", "www.marsai.tech"]
+ALLOWED_HOSTS = ["marsai.tech", "www.marsai.tech", "64.23.175.121"]
 
 
 # Application definition

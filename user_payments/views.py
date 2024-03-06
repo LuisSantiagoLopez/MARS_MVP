@@ -75,6 +75,7 @@ def payment_cancelled(request):
 @csrf_exempt
 #API ENDPOINT STRIPE CALLS 
 def stripe_webhook(request):
+   time.sleep(10)
    #SENDING A REQUEST TO THE STRIPE WEBHOOK FOR INTERNAL PROCESSING
    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
    payload = request.body
