@@ -48,19 +48,6 @@ def product_page(request):
 #API CALL FROM STRIPE
 def payment_successful(request):
    stripe.api_key = stripe_api_key
-   stripe_subscription_id = request.GET.get("session_id", None)
-
-   #NOW WE DELETE ANY OTHER PREVIOUS SUBSCRIPTION THE USER HAD 
-   check_subscription = UserPayments.objects.filter(app_user=request.user, subscription_status=True).last()
-
-   if check_subscription:
-      subscription_id = check_subscription.stripe_subscription_id
-      stripe.Subscription.delete(subscription_id)
-      check_subscription.subscription_status = False
-
-   #WE CREATE THE USER PAYMENT INSTANCE ON THE DATABASE WITH THE USER AND THE CHECKOUT ID REDIRECTED BY STRIPE
-   user_payment = UserPayments.objects.create(app_user=request.user, stripe_subscription_id=stripe_subscription_id)
-   user_payment.save()
 
    logger.debug("Payment successful")
 
@@ -104,36 +91,31 @@ def stripe_webhook(request):
    #EXTRACTING THE EVENT OBJECT
    subscription = event["data"]["object"]
    stripe_subscription_id = subscription.get("id")
+   subscription_number = subscription.get("subscription")
    customer = subscription.get("customer")
 
-   logger.debug(f"INFO EVENT: Type {event_type}, subscription {subscription}, checkout it {stripe_subscription_id}, customer {customer}")
-
-   #EXTRACTING DATABASE INSTANCE THROUGH THE SESSION ID CREATED IF THE PAYMENT WAS SUCCESSFUL 
-   user_payment = UserPayments.objects.get(stripe_subscription_id=stripe_subscription_id)
+   logger.debug(f"INFO EVENT: Type {event_type}, subscription {subscription}, checkout id {stripe_subscription_id}, customer {customer}")
 
    #FIRST CHECKOUT OPTION WEBHOOK
    if event_type == "checkout.session.completed":
-      #VERIFYING IF THE REQUEST WAS SUCCESSFUL
+      #NOW WE DELETE ANY OTHER PREVIOUS SUBSCRIPTION THE USER HAD 
+      check_subscription = UserPayments.objects.filter(app_user=request.user, subscription_status=True).last()
 
+      if check_subscription:
+         subscription_number_previous = check_subscription.subscription_number
+         stripe.Subscription.delete(subscription_number_previous)
+         check_subscription.subscription_status = False
+      
       #NO USE CASE YET, BUT NICE TO HAVE THE ITEMS LISTED IN A DATA STRUCTURE
       line_items = stripe.checkout.Session.list_line_items(stripe_subscription_id, limit=1)
 
       #CODE OF THE SUBSCRIPTION NUMBER THEY CHOSE 
       subscription_id_bought = line_items.data[0].price.product
 
-      #SAVING DATA TO THE DATBASE
-      user_payment = UserPayments.objects.get(stripe_subscription_id=stripe_subscription_id)
-
-      #SUBSCRIPTION TYPE DECLARATION
-      user_payment.subscription_type = subscription_id_bought
-
-      #CHANGING STATUS OF SUBSCRIPTION WHICH THEN BLOCKS MESSAGE SENT IN CHATBOT/VIEWS
-      user_payment.subscription_status = True
-
-      #SAVING THIS CUSTOMER AFTER THE PAYMENT SUCCEEDS  
-      user_payment.stripe_customer = customer
+      logger.debug(f"SUB ID: {subscription_id_bought}")
       
-      #SAVING CUSTOMER AND STATUS FOR LATER PROCESSING
+      #VERIFYING IF THE REQUEST WAS SUCCESSFUL
+      user_payment = UserPayments.objects.create(app_user=request.user, stripe_subscription_id=stripe_subscription_id, stripe_customer=customer, subscription_type=subscription_id_bought, subscription_status=True, subscription_number=subscription_number)
       user_payment.save()
 
       logger.debug(f"Checkout completed, user payment modified successfully.")
@@ -141,7 +123,7 @@ def stripe_webhook(request):
    #MONTHLY INVOICE TO THE USER AFTER PAYMENT OR IF PAYMENT FAILED.
    elif event_type in ['invoice.paid', 'invoice.payment_failed']:
       #EXTRACTING THE USER PAYMENT INSTANCE FROM THE DATBASE
-      user_payment = UserPayments.objects.get(stripe_customer=customer)
+      user_payment = UserPayments.objects.get(stripe_subscription_id=stripe_subscription_id)
 
       #CHANGING STATUS OF SUBSCRIPTION WHICH THEN BLOCKS MESSAGE SENT IN CHATBOT/VIEWS
       if event_type == 'invoice.paid':
@@ -154,6 +136,7 @@ def stripe_webhook(request):
 
    #IF THE SUBSCRIPTION ENDS BECAUSE THE USER CANCELLED, WE WILL ALSO STOP PROVIDING ACCESS TO THE PLATFORM. STRIPE COLLECTS DATA. 
    elif event_type == 'customer.subscription.deleted':
+      user_payment = UserPayments.objects.get(stripe_subscription_id=stripe_subscription_id)
 
       #CANCEL THEIR SUBSCRIPTION AND STOP GIVING THEM ACCESS 
       user_payment.subscription_status = False
