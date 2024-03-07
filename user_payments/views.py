@@ -17,29 +17,30 @@ logger = logging.getLogger('application')
 @login_required(login_url = "/login/")
 #API ENDPOINT FOR THE FRONTEND'S MODAL
 def product_page(request):
-  if request.method == "POST":
+   stripe.api_key = stripe_api_key
+   if request.method == "POST":
 
       stripe.api_key = stripe_api_key
       option_id = request.POST.get("option_id")
       if option_id == "1":
-          price_id = "price_1Of2mbCgimrkAXdjv59KSL0K"
+         price_id = "price_1Of2mbCgimrkAXdjv59KSL0K"
       if option_id == "2": 
-          price_id = "price_1Of2n0CgimrkAXdjn9dXOIVO"
+         price_id = "price_1Of2n0CgimrkAXdjn9dXOIVO"
 
 
       #CHECKOUT SESSION FROM STRIPE'S API ENDPOINTS. REDIRECTION TO STRIPE'S URL NECESSARY AFTER CREATING THE SESSION. 
       checkout_session = stripe.checkout.Session.create(
-          payment_method_types = ["card"],
-          line_items = [
-                {
-                   "price": price_id,
-                   "quantity": 1,
-                },
+         payment_method_types = ["card"],
+         line_items = [
+               {
+                  "price": price_id,
+                  "quantity": 1,
+               },
             ],
-           mode = "subscription",
-           success_url = request.build_absolute_uri('payment_successful') + '?session_id={CHECKOUT_SESSION_ID}',
-           cancel_url = request.build_absolute_uri('payment_cancelled'),
-        )
+         mode = "subscription",
+         success_url = request.build_absolute_uri('payment_successful') + '?session_id={CHECKOUT_SESSION_ID}',
+         cancel_url = request.build_absolute_uri('payment_cancelled'),
+      )
 
       #SENDING THIS OBJECT TO STRIPE'S URL WITH A REQUEST THAT CONTAINS THE PAYLOAD WE JUST CREATED WITH THE PRICE ID OF THE PRODUCT 
       return redirect(checkout_session.url, code=303)
@@ -76,6 +77,7 @@ def payment_cancelled(request):
 @csrf_exempt
 #API ENDPOINT STRIPE CALLS 
 def stripe_webhook(request):
+   stripe.api_key = stripe_api_key
    logger.debug("Received stripe webhook call")
    #SENDING A REQUEST TO THE STRIPE WEBHOOK FOR INTERNAL PROCESSING
    webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
