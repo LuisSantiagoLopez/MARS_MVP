@@ -94,7 +94,7 @@ def stripe_webhook(request):
    subscription_number = subscription.get("subscription")
    customer = subscription.get("customer")
 
-   logger.debug(f"INFO EVENT: Type {event_type}, subscription {subscription}, checkout id {stripe_subscription_id}, customer {customer}")
+   logger.debug(f"INFO EVENT: Type {event_type}, type of event_type {type(event_type)}, checkout id {stripe_subscription_id}, customer {customer}")
 
    #MONTHLY INVOICE TO THE USER AFTER PAYMENT OR IF PAYMENT FAILED.
    if event_type in ['invoice.paid', 'invoice.payment_failed']:
@@ -129,7 +129,7 @@ def stripe_webhook(request):
             check_subscription = UserPayments.objects.filter(app_user=request.user, subscription_status=True).last()
 
             check_subscription.subscription_status = False
-            
+
    #IF THE SUBSCRIPTION ENDS BECAUSE THE USER CANCELLED, WE WILL ALSO STOP PROVIDING ACCESS TO THE PLATFORM. STRIPE COLLECTS DATA. 
    elif event_type == 'customer.subscription.deleted':
       user_payment = UserPayments.objects.get(stripe_subscription_id=stripe_subscription_id)
