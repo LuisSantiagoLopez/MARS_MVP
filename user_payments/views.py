@@ -96,41 +96,37 @@ def stripe_webhook(request):
 
    logger.debug(f"INFO EVENT: Type {event_type}, subscription {subscription}, checkout id {stripe_subscription_id}, customer {customer}")
 
-   #FIRST CHECKOUT OPTION WEBHOOK
-   if event_type == "checkout.session.completed":
-      #NOW WE DELETE ANY OTHER PREVIOUS SUBSCRIPTION THE USER HAD 
-      check_subscription = UserPayments.objects.filter(app_user=request.user, subscription_status=True).last()
-
-      if check_subscription:
-         subscription_number_previous = check_subscription.subscription_number
-         stripe.Subscription.delete(subscription_number_previous)
-         check_subscription.subscription_status = False
-      
-      #NO USE CASE YET, BUT NICE TO HAVE THE ITEMS LISTED IN A DATA STRUCTURE
-      line_items = stripe.checkout.Session.list_line_items(stripe_subscription_id, limit=1)
-
-      #CODE OF THE SUBSCRIPTION NUMBER THEY CHOSE 
-      subscription_id_bought = line_items.data[0].price.product
-
-      logger.debug(f"SUB ID: {subscription_id_bought}")
-      
-      #VERIFYING IF THE REQUEST WAS SUCCESSFUL
-      user_payment = UserPayments.objects.create(app_user=request.user, stripe_subscription_id=stripe_subscription_id, stripe_customer=customer, subscription_type=subscription_id_bought, subscription_status=True, subscription_number=subscription_number)
-      user_payment.save()
-
-      logger.debug(f"Checkout completed, user payment modified successfully.")
-   
    #MONTHLY INVOICE TO THE USER AFTER PAYMENT OR IF PAYMENT FAILED.
-   elif event_type in ['invoice.paid', 'invoice.payment_failed']:
+   if event_type in ['invoice.paid', 'invoice.payment_failed']:
       #EXTRACTING THE USER PAYMENT INSTANCE FROM THE DATBASE
       user_payment = UserPayments.objects.get(stripe_subscription_id=stripe_subscription_id)
 
       #CHANGING STATUS OF SUBSCRIPTION WHICH THEN BLOCKS MESSAGE SENT IN CHATBOT/VIEWS
       if event_type == 'invoice.paid':
-            user_payment.subscription_status = True
+            #NOW WE DELETE ANY OTHER PREVIOUS SUBSCRIPTION THE USER HAD 
+            check_subscription = UserPayments.objects.filter(app_user=request.user, subscription_status=True).last()
+
+            if check_subscription:
+               subscription_number_previous = check_subscription.subscription_number
+               stripe.Subscription.delete(subscription_number_previous)
+               check_subscription.subscription_status = False
+                  
+            #NO USE CASE YET, BUT NICE TO HAVE THE ITEMS LISTED IN A DATA STRUCTURE
+            line_items = stripe.checkout.Session.list_line_items(stripe_subscription_id, limit=1)
+
+            #CODE OF THE SUBSCRIPTION NUMBER THEY CHOSE 
+            subscription_id_bought = line_items.data[0].price.product
+
+            logger.debug(f"SUB ID: {subscription_id_bought}")
+                  
+            #VERIFYING IF THE REQUEST WAS SUCCESSFUL
+            user_payment = UserPayments.objects.create(app_user=request.user, stripe_subscription_id=stripe_subscription_id, stripe_customer=customer, subscription_type=subscription_id_bought, subscription_status=True, subscription_number=subscription_number)
+            user_payment.save()
+            
       elif event_type == 'invoice.payment_failed':
-            user_payment.subscription_status = False
-      user_payment.save()    
+            check_subscription = UserPayments.objects.filter(app_user=request.user, subscription_status=True).last()
+
+            check_subscription.subscription_status = False
 
       logger.debug(f"Invoice paid successfully.")
 
