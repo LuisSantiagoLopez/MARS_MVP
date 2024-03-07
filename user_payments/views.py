@@ -111,7 +111,7 @@ def stripe_webhook(request):
    #MONTHLY INVOICE TO THE USER AFTER PAYMENT OR IF PAYMENT FAILED.
    if event_type in ['invoice.paid', 'invoice.payment_failed']:
 
-      user_payment = UserPayments.object.filter(stripe_subscription_id=stripe_subscription_id)
+      user_payment = UserPayments.objects.filter(stripe_subscription_id=stripe_subscription_id).last()
 
       #CHANGING STATUS OF SUBSCRIPTION WHICH THEN BLOCKS MESSAGE SENT IN CHATBOT/VIEWS
       if event_type == 'invoice.paid':
