@@ -94,7 +94,7 @@ def stripe_webhook(request):
    subscription_number = subscription.get("subscription")
    customer = subscription.get("customer")
 
-   logger.debug(f"INFO EVENT: Type {event_type}, type of event_type {type(event_type)}, checkout id {stripe_subscription_id}, customer {customer}")
+   logger.debug(f"INFO EVENT: Type {event_type}, type of event_type {type(event_type)}, checkout id {stripe_subscription_id}, customer {customer}, subscription number {subscription_number}")
 
    #MONTHLY INVOICE TO THE USER AFTER PAYMENT OR IF PAYMENT FAILED.
    if event_type in ['invoice.paid', 'invoice.payment_failed']:
