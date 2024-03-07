@@ -101,24 +101,24 @@ def stripe_webhook(request):
    event_type = event["type"]
    #EXTRACTING THE EVENT OBJECT
    subscription = event["data"]["object"]
-   subscription_id = subscription.get("subscription")
+   stripe_subscription_id = subscription.get("subscription")
    customer = subscription.get("customer")
 
    #EXTRACTING DATABASE INSTANCE THROUGH THE SESSION ID CREATED IF THE PAYMENT WAS SUCCESSFUL 
-   user_payment = UserPayments.objects.get(stripe_checkout_id=subscription_id)
+   user_payment = UserPayments.objects.get(stripe_subscription_id=stripe_subscription_id)
 
    #FIRST CHECKOUT OPTION WEBHOOK
    if event_type == "checkout.session.completed":
       #VERIFYING IF THE REQUEST WAS SUCCESSFUL
 
       #NO USE CASE YET, BUT NICE TO HAVE THE ITEMS LISTED IN A DATA STRUCTURE
-      line_items = stripe.checkout.Session.list_line_items(subscription_id, limit=1)
+      line_items = stripe.checkout.Session.list_line_items(stripe_subscription_id, limit=1)
 
       #CODE OF THE SUBSCRIPTION NUMBER THEY CHOSE 
       subscription_id_bought = line_items.data[0].price.product
 
       #SAVING DATA TO THE DATBASE
-      user_payment = UserPayments.objects.get(stripe_checkout_id=subscription_id)
+      user_payment = UserPayments.objects.get(stripe_subscription_id=stripe_subscription_id)
 
       #SUBSCRIPTION TYPE DECLARATION
       user_payment.subscription_type = subscription_id_bought
@@ -174,8 +174,8 @@ def customer_portal(request):
    if payment_instance:
       stripe.api_key = stripe_api_key
 
-      checkout_session_id = payment_instance.stripe_checkout_id
-      session = stripe.checkout.Session.retrieve(checkout_session_id)
+      stripe_subscription_id = payment_instance.stripe_subscription_id
+      session = stripe.checkout.Session.retrieve(stripe_subscription_id)
       customer = stripe.Customer.retrieve(session.customer)
 
       #CREATE SESSION FOR STRIPE'S PORTAL URL ENDPOINT. USERS RETURN TO CHATBOT AFTER THEY FINISH.
