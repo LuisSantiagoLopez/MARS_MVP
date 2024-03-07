@@ -103,8 +103,10 @@ def stripe_webhook(request):
    event_type = event["type"]
    #EXTRACTING THE EVENT OBJECT
    subscription = event["data"]["object"]
-   stripe_subscription_id = subscription.get("subscription")
+   stripe_subscription_id = subscription.get("id")
    customer = subscription.get("customer")
+
+   logger.debug(f"INFO EVENT: Type {event_type}, subscription {subscription}, checkout it {stripe_subscription_id}, customer {customer}")
 
    #EXTRACTING DATABASE INSTANCE THROUGH THE SESSION ID CREATED IF THE PAYMENT WAS SUCCESSFUL 
    user_payment = UserPayments.objects.get(stripe_subscription_id=stripe_subscription_id)
