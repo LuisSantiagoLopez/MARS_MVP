@@ -6,6 +6,7 @@ from user_payments.models import UserPayments
 from dotenv import load_dotenv
 from django.contrib import messages
 import stripe
+import logging
 import os
 
 
@@ -46,7 +47,7 @@ def product_page(request):
 #API CALL FROM STRIPE
 def payment_successful(request):
    stripe.api_key = stripe_api_key
-   checkout_session_id = request.GET.get("session_id", None)
+   stripe_subscription_id = request.GET.get("session_id", None)
 
    #NOW WE DELETE ANY OTHER PREVIOUS SUBSCRIPTION THE USER HAD 
    check_subscription = UserPayments.objects.filter(app_user=request.user, subscription_status=True).last()
@@ -57,7 +58,7 @@ def payment_successful(request):
       check_subscription.subscription_status = False
 
    #WE CREATE THE USER PAYMENT INSTANCE ON THE DATABASE WITH THE USER AND THE CHECKOUT ID REDIRECTED BY STRIPE
-   user_payment = UserPayments.objects.create(app_user=request.user, stripe_checkout_id=checkout_session_id)
+   user_payment = UserPayments.objects.create(app_user=request.user, stripe_subscription_id=stripe_subscription_id)
    user_payment.save()
 
    #INSTEAD OF SENDING THE USER TO AN ADDITIONAL WEBSITE, WE'LL REDRECT THEM TO THE CHATBOT WITH A MESSAGE THAT IS ALSO EMBEDDED INSIDE THE CHATBOT.HTML TEMPLATE
@@ -70,10 +71,11 @@ def payment_cancelled(request):
    messages.add_message(request, messages.INFO, "Ocurrió un error con su tarjeta. Si necesita asistencia, contáctenos.")
    return redirect('/chatbot/')
 
-
 @csrf_exempt
 #API ENDPOINT STRIPE CALLS 
 def stripe_webhook(request):
+   logger = logging.getLogger('application')
+   logger.debug("Received stripe webhook call")
    #SENDING A REQUEST TO THE STRIPE WEBHOOK FOR INTERNAL PROCESSING
    webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
    payload = request.body
@@ -83,14 +85,17 @@ def stripe_webhook(request):
    #CONNECTION TO THE STRIPE WEBHOOK ENDPOINT WITH OUR STRIPE WEBHOOK SECRET
    try:
       event = stripe.Webhook.construct_event(payload, signature_header, webhook_secret)
+      logger.debug(f"Stripe event: {event}")
 
    #EXCEPTION HANDLING
    except ValueError as e: 
       #INVALID PAYLOAD
+      logger.debug(f"No event, some unknown error ocurred")
       return HttpResponse(status=400)
    except stripe.error.SignatureVerificationError as e: 
       #INVALID SIGNATURE
-      return HttpResponse(status=400) 
+      logger.debug(f"No event, signature verification error {event}")
+      return HttpResponse(status=400)
    
    ## EVENT HANDLING ##
    event_type = event["type"]
@@ -126,6 +131,8 @@ def stripe_webhook(request):
       
       #SAVING CUSTOMER AND STATUS FOR LATER PROCESSING
       user_payment.save()
+
+      logger.debug(f"Checkout completed, user payment modified successfully.")
    
    #MONTHLY INVOICE TO THE USER AFTER PAYMENT OR IF PAYMENT FAILED.
    elif event_type in ['invoice.paid', 'invoice.payment_failed']:
@@ -137,7 +144,9 @@ def stripe_webhook(request):
             user_payment.subscription_status = True
       elif event_type == 'invoice.payment_failed':
             user_payment.subscription_status = False
-      user_payment.save()         
+      user_payment.save()    
+
+      logger.debug(f"Invoice paid successfully.")
 
    #IF THE SUBSCRIPTION ENDS BECAUSE THE USER CANCELLED, WE WILL ALSO STOP PROVIDING ACCESS TO THE PLATFORM. STRIPE COLLECTS DATA. 
    elif event_type == 'customer.subscription.deleted':
@@ -145,6 +154,8 @@ def stripe_webhook(request):
       #CANCEL THEIR SUBSCRIPTION AND STOP GIVING THEM ACCESS 
       user_payment.subscription_status = False
       user_payment.save()
+
+      logger.debug(f"Subscription deleted successfully")
 
    #RARE - IF THE WEBHOOK ISN'T FOUND, WE WON'T HANDLE IT. 
    else:

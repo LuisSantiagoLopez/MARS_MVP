@@ -155,6 +155,11 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join('/home/django/MARS_MVP', 'django.log'),
         },
+        'application_file': { 
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join('/home/django/MARS_MVP', 'application.log'),
+        },
     },
     'loggers': {
         'django': {
@@ -162,7 +167,13 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'application': {  
+            'handlers': ['application_file'],  
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
+
 
 CSRF_TRUSTED_ORIGINS = ["https://marsai.tech"]

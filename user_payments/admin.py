@@ -10,9 +10,9 @@ class UserPaymentsAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'stripe_checkout_id')
 
     def get_readonly_fields(self, request, obj=None):
-        if obj:  # editing an existing object
+        if obj: 
             return self.readonly_fields + ('app_user', 'stripe_customer')
         return self.readonly_fields
 
-# Register the model with the custom admin class
+
 admin.site.register(UserPayments, UserPaymentsAdmin)
