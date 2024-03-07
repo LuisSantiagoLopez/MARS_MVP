@@ -12,6 +12,7 @@ import os
 
 load_dotenv()
 stripe_api_key = os.getenv("STRIPE_API_KEY_TEST")
+logger = logging.getLogger('application')
 
 @login_required(login_url = "/login/")
 #API ENDPOINT FOR THE FRONTEND'S MODAL
@@ -61,6 +62,8 @@ def payment_successful(request):
    user_payment = UserPayments.objects.create(app_user=request.user, stripe_subscription_id=stripe_subscription_id)
    user_payment.save()
 
+   logger.debug("Payment successful")
+
    #INSTEAD OF SENDING THE USER TO AN ADDITIONAL WEBSITE, WE'LL REDRECT THEM TO THE CHATBOT WITH A MESSAGE THAT IS ALSO EMBEDDED INSIDE THE CHATBOT.HTML TEMPLATE
    messages.add_message(request, messages.INFO, "Gracias por volverte parte de nuestra comunidad, ya puedes chatear con MARS o crear más publicaciones.")
    return redirect('/chatbot/')
@@ -74,7 +77,6 @@ def payment_cancelled(request):
 @csrf_exempt
 #API ENDPOINT STRIPE CALLS 
 def stripe_webhook(request):
-   logger = logging.getLogger('application')
    logger.debug("Received stripe webhook call")
    #SENDING A REQUEST TO THE STRIPE WEBHOOK FOR INTERNAL PROCESSING
    webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
