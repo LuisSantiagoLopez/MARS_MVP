@@ -19,13 +19,29 @@ logger = logging.getLogger('application')
 def product_page(request):
    stripe.api_key = stripe_api_key
    if request.method == "POST":
-
       stripe.api_key = stripe_api_key
       option_id = request.POST.get("option_id")
-      if option_id == "1":
+      if option_id == "Plus":
+         subscription_name = "Plus"
          price_id = "price_1Of2mbCgimrkAXdjv59KSL0K"
-      if option_id == "2": 
+         upgrade = False
+      elif option_id == "Pro": 
+         subscription_name = "Pro"
          price_id = "price_1Of2n0CgimrkAXdjn9dXOIVO"
+         upgrade = False
+      elif option_id == "Plus->Pro":
+         subscription_name = "Pro"
+         price_id = "price_1Of2n0CgimrkAXdjn9dXOIVO"
+         upgrade = True
+      elif option_id == "Pro->Plus": 
+         subscription_name = "Plus"
+         price_id = "price_1Of2mbCgimrkAXdjv59KSL0K"
+         upgrade = True
+
+      last_payment_subscription_id = ""
+      if upgrade == True: 
+         last_payment = UserPayments.objects.filter(app_user=request.user).last()
+         last_payment_subscription_id = last_payment.subscription_id
 
 
       #CHECKOUT SESSION FROM STRIPE'S API ENDPOINTS. REDIRECTION TO STRIPE'S URL NECESSARY AFTER CREATING THE SESSION. 
@@ -42,6 +58,9 @@ def product_page(request):
          cancel_url = request.build_absolute_uri('payment_cancelled'),
       )
 
+      user_payment = UserPayments.objects.create(app_user=request.user, upgrade=upgrade, price_id=price_id, subscription_name=subscription_name, last_payment_subscription_id=last_payment_subscription_id)
+      user_payment.save()
+
       #SENDING THIS OBJECT TO STRIPE'S URL WITH A REQUEST THAT CONTAINS THE PAYLOAD WE JUST CREATED WITH THE PRICE ID OF THE PRODUCT 
       return redirect(checkout_session.url, code=303)
 
@@ -49,19 +68,11 @@ def product_page(request):
 #API CALL FROM STRIPE
 def payment_successful(request):
    stripe.api_key = stripe_api_key
-   stripe_subscription_id = request.GET.get("session_id", None)
-
    logger.debug("Payment successful")
+   checkout_id = request.GET.get("session_id", None)
 
-   #NOW WE DELETE ANY OTHER PREVIOUS SUBSCRIPTION THE USER HAD 
-   check_subscription = UserPayments.objects.filter(app_user=request.user, subscription_status=True).last()
-
-   if check_subscription:
-         subscription_number_previous = check_subscription.subscription_number
-         stripe.Subscription.delete(subscription_number_previous)
-         check_subscription.subscription_status = False
-
-   user_payment = UserPayments.objects.create(app_user=request.user, stripe_subscription_id = stripe_subscription_id)
+   user_payment = UserPayments.objects.last()
+   user_payment.checkout_id = checkout_id
    user_payment.save()
 
    #INSTEAD OF SENDING THE USER TO AN ADDITIONAL WEBSITE, WE'LL REDRECT THEM TO THE CHATBOT WITH A MESSAGE THAT IS ALSO EMBEDDED INSIDE THE CHATBOT.HTML TEMPLATE
@@ -88,8 +99,7 @@ def stripe_webhook(request):
    #CONNECTION TO THE STRIPE WEBHOOK ENDPOINT WITH OUR STRIPE WEBHOOK SECRET
    try:
       event = stripe.Webhook.construct_event(payload, signature_header, webhook_secret)
-      logger.debug(f"Stripe event: {event}")
-
+      
    #EXCEPTION HANDLING
    except ValueError as e: 
       #INVALID PAYLOAD
@@ -104,42 +114,40 @@ def stripe_webhook(request):
    event_type = event["type"]
    #EXTRACTING THE EVENT OBJECT
    subscription = event["data"]["object"]
-   stripe_subscription_id = subscription.get("id")
-   subscription_number = subscription.get("subscription")
-   customer = subscription.get("customer")
+   checkout_id = subscription.get("id")
+   subscription_id = subscription.get("subscription")
+   customer_id = subscription.get("customer")
 
-   logger.debug(f"INFO EVENT: Type {event_type}, type of event_type {type(event_type)}, checkout id {stripe_subscription_id}, customer {customer}, subscription number {subscription_number}")
+   logger.debug(f"INFO EVENT: Type {event_type}, checkout id {checkout_id}, customer {customer_id}, subscription id {subscription_id}")
+
+   user_payment = UserPayments.objects.filter(checkout_id=checkout_id)
 
    #MONTHLY INVOICE TO THE USER AFTER PAYMENT OR IF PAYMENT FAILED.
    if event_type in ['invoice.paid', 'invoice.payment_failed']:
-
-      user_payment = UserPayments.objects.filter(stripe_subscription_id=stripe_subscription_id).last()
-
       #CHANGING STATUS OF SUBSCRIPTION WHICH THEN BLOCKS MESSAGE SENT IN CHATBOT/VIEWS
       if event_type == 'invoice.paid':
-            #NO USE CASE YET, BUT NICE TO HAVE THE ITEMS LISTED IN A DATA STRUCTURE
-            line_items = stripe.checkout.Session.list_line_items(stripe_subscription_id, limit=1)
-
-            #CODE OF THE SUBSCRIPTION NUMBER THEY CHOSE 
-            subscription_id_bought = line_items.data[0].price.product
-
-            logger.debug(f"SUB ID: {subscription_id_bought}")
-                  
             #VERIFYING IF THE REQUEST WAS SUCCESSFUL
-            user_payment.stripe_customer = customer 
-            user_payment.subscription_type = subscription_id_bought 
+            user_payment.customer_id = customer_id 
+            user_payment.subscription_id = subscription_id
             user_payment.subscription_status = True 
-            user_payment.subscription_number = subscription_number
+            user_payment.save()
 
             logger.debug(f"Invoice paid successfully.")
+
+            if user_payment.upgrade == True: 
+               last_payment_subscription_id = user_payment.last_payment_subscription_id
+               price_id = user_payment.price_id
+
+               stripe.Subscription.modify(
+                  last_payment_subscription_id,
+                  items=[{"id": subscription_id},{"price": price_id}]
+               )
             
       elif event_type == 'invoice.payment_failed':
             user_payment.subscription_status = False
 
    #IF THE SUBSCRIPTION ENDS BECAUSE THE USER CANCELLED, WE WILL ALSO STOP PROVIDING ACCESS TO THE PLATFORM. STRIPE COLLECTS DATA. 
    elif event_type == 'customer.subscription.deleted':
-      user_payment = UserPayments.objects.get(stripe_subscription_id=stripe_subscription_id)
-
       #CANCEL THEIR SUBSCRIPTION AND STOP GIVING THEM ACCESS 
       user_payment.subscription_status = False
       user_payment.save()

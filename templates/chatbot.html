@@ -321,12 +321,25 @@
                       <p class="plan-price">MXN $150/mes</p>
                       <!--Form de stripe p1-->
                       
+                      {% if subscription_name ==  "Plus" %}
+                      <a href="{% url 'customer_portal' %}" class="btn-secondary">Ver tu plan</a>
+
+                      {% elif subscription_name == "Pro" %}
                       <form id="paymentForm" action="{% url 'product_page' %}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" id="option_id" name="option_id" value="" />
                         
-                        <button type="button" class="btn btn-primary" onclick="setOption(1)">Acceder a MARS</button>
+                        <button type="button" class="btn btn-primary" onclick="setOption('Pro->Plus')">Rebaja tu plan</button>
                       </form>
+
+                      {% else %}
+                      <form id="paymentForm" action="{% url 'product_page' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" id="option_id" name="option_id" value="" />
+                        
+                        <button type="button" class="btn btn-primary" onclick="setOption('Plus')">Acceder a MARS</button>
+                      </form>
+                      {% endif %}
 
                       <ul class="plan-features">
                         <li>Access to GPT-4, our most capable model</li>
@@ -347,12 +360,25 @@
                       <p class="plan-price">$1,000/mes</p>
 
                       <!--Form de stripe p2-->
+                      {% if subscription_name ==  "Pro" %}
+                      <a href="{% url 'customer_portal' %}" class="btn-secondary">Ver tu plan</a>
+
+                      {% elif subscription_name == "Plus" %}
                       <form id="paymentForm" action="{% url 'product_page' %}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" id="option_id" name="option_id" value="" />
                         
-                        <button type="button" class="btn btn-primary" onclick="setOption(2)">Crece tu negocio con MARS</button>
+                        <button type="button" class="btn btn-primary" onclick="setOption('Plus->Pro')">Mejora tu plan</button>
                       </form>
+
+                      {% else %}
+                      <form id="paymentForm" action="{% url 'product_page' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" id="option_id" name="option_id" value="" />
+                        
+                        <button type="button" class="btn btn-primary" onclick="setOption('Pro')">Crece tu marca</button>
+                      </form>
+                      {% endif %}
                     
                       <ul class="plan-features">
                         <li>Everything in Plus, and:</li>
