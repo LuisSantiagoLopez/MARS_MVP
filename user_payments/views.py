@@ -170,14 +170,11 @@ def customer_portal(request):
    #WE PASS THE DATBASE DATA TO STRIPE AND CALL THEIR URL 
    if payment_instance:
       stripe.api_key = stripe_api_key
-
-      stripe_subscription_id = payment_instance.stripe_subscription_id
-      session = stripe.checkout.Session.retrieve(stripe_subscription_id)
-      customer = stripe.Customer.retrieve(session.customer)
+      customer_id = payment_instance.customer_id
 
       #CREATE SESSION FOR STRIPE'S PORTAL URL ENDPOINT. USERS RETURN TO CHATBOT AFTER THEY FINISH.
       session = stripe.billing_portal.Session.create(
-         customer=customer,
+         customer=customer_id,
          return_url=request.build_absolute_uri('/chatbot/'), 
       )
 
