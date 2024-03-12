@@ -53,25 +53,32 @@
     height: calc(100vh - 56px);
   }
 
-  /* Loading animation styles */
-  .loading-animation {
-    border: 4px solid #f3f3f3; /* Light grey */
-    border-top: 4px solid #3498db; /* Blue */
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 2s linear infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  .loading-message {
+  /* Typing indicator styles */
+  .typing-indicator {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f1f0f0; /* Match the received message bubble color */
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background-color: #bbb;
+    border-radius: 50%;
+    animation: dotFluctuate 1.5s infinite linear;
+  }
+
+  .dot:nth-child(1) { animation-delay: 0s; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes dotFluctuate {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
   }
 
   .card.flex-grow-1 {
@@ -565,14 +572,15 @@
     message_input.value = '';
 
     const loadingWidget = document.createElement('li');
-    loadingWidget.className = 'message loading-message';
+    loadingWidget.className = 'message received'; // Use the same class as other messages for consistent styling
     loadingWidget.innerHTML = `
-        <div class="message-text">
-            <div class="message-content">
-                <div class="loading-animation"></div>
-                <span>Loading...</span>
-            </div>
-        </div>`;
+      <div class="message-text">
+          <div class="typing-indicator">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+          </div>
+      </div>`;
     messages_list.appendChild(loadingWidget);
 
     fetch(fetchUrl, {
