@@ -148,7 +148,7 @@ def stripe_webhook(request):
                   items=[{"id": subscription_id},{"price": price_id}]
                )
 
-               last_payment = UserPayments.objects.get(last_payment_subscription_id=subscription_id)
+               last_payment = UserPayments.objects.get(subscription_id=last_payment_subscription_id)
                last_payment.subscription_status = False
                last_payment.save()
             
