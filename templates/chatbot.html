@@ -506,20 +506,23 @@
   const reopenSidebar = document.getElementById('reopen-sidebar');
   const messageForm = document.querySelector('.message-form');
 
-  const isSidebarDisplayed = sidebar.style.display !== 'none';
+  // Assuming the sidebar is initially hidden, we check its current CSS display property
+  const isSidebarDisplayed = sidebar.style.display !== 'none' && sidebar.style.display !== '';
 
   if (isSidebarDisplayed) {
+    // If the sidebar is currently displayed, hide it and update localStorage
     sidebar.style.display = 'none';
     reopenSidebar.style.display = 'flex';
     messageForm.classList.remove('sidebar-opened-form');
     localStorage.setItem('sidebarOpen', 'false');
   } else {
+    // If the sidebar is not displayed, show it and update localStorage
     sidebar.style.display = 'block';
     reopenSidebar.style.display = 'none';
     messageForm.classList.add('sidebar-opened-form');
     localStorage.setItem('sidebarOpen', 'true');
   }
-  }
+}
 
   function deleteSession(event, sessionId) {
   event.stopPropagation(); // Prevent the session change action
