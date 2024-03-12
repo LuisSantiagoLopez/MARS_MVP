@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import UserPayments
 
 class UserPaymentsAdmin(admin.ModelAdmin):
-    list_display = ('app_user', 'subscription_name', 'subscription_status', 'checkout_id', 'subscription_id', 'customer_id', 'created_at')
+    list_display = ('app_user', 'subscription_name', 'subscription_status', 'checkout_id', 'subscription_id', 'customer_id', 'created_at', 'upgrade')
     list_filter = ('subscription_status', 'created_at')
     search_fields = ('app_user__username', 'customer_id', 'subscription_id')
     list_display_links = ('app_user', 'subscription_id')

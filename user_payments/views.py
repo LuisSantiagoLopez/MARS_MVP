@@ -42,6 +42,7 @@ def product_page(request):
       if upgrade == True: 
          last_payment = UserPayments.objects.filter(app_user=request.user).last()
          last_payment_subscription_id = last_payment.subscription_id
+         logger.debug(f"last_payment_subscription id {last_payment_subscription_id}")
 
 
       #CHECKOUT SESSION FROM STRIPE'S API ENDPOINTS. REDIRECTION TO STRIPE'S URL NECESSARY AFTER CREATING THE SESSION. 
@@ -139,6 +140,8 @@ def stripe_webhook(request):
             if user_payment.upgrade == True: 
                last_payment_subscription_id = user_payment.last_payment_subscription_id
                price_id = user_payment.price_id
+
+               logger.debug(f"Transferring one subscription plan to the other")
 
                stripe.Subscription.modify(
                   last_payment_subscription_id,
