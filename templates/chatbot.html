@@ -445,33 +445,36 @@ window.addEventListener('DOMContentLoaded', () => {
   const sidebarState = localStorage.getItem('sidebarOpen');
   const sidebar = document.getElementById('sidebar');
   const reopenSidebar = document.getElementById('reopen-sidebar');
-  
-  // If sidebarState is not explicitly false, show the sidebar by default
+  const messageForm = document.querySelector('.message-form');
+
   if (sidebarState === 'true' || sidebarState === null) {
     sidebar.style.display = 'block';
     reopenSidebar.style.display = 'none';
+    messageForm.classList.add('sidebar-opened-form');
   } else {
     sidebar.style.display = 'none';
     reopenSidebar.style.display = 'flex';
+    messageForm.classList.remove('sidebar-opened-form');
   }
 });
 
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   const reopenSidebar = document.getElementById('reopen-sidebar');
+  const messageForm = document.querySelector('.message-form');
 
-  // Check the current state of the sidebar to toggle it
-  if (sidebar.style.display === 'none' || sidebar.style.display === '') { // '' for initial state without explicit inline style
+  if (sidebar.style.display === 'none' || sidebar.style.display === '') { // '' handles initial state without explicit inline style
     sidebar.style.display = 'block';
     reopenSidebar.style.display = 'none';
+    messageForm.classList.add('sidebar-opened-form');
     localStorage.setItem('sidebarOpen', 'true');
   } else {
     sidebar.style.display = 'none';
     reopenSidebar.style.display = 'flex';
+    messageForm.classList.remove('sidebar-opened-form');
     localStorage.setItem('sidebarOpen', 'false');
   }
 }
-
 </script>
 
 <script>
@@ -487,9 +490,7 @@ function toggleSidebar() {
   const message_form = document.querySelector('.message-form');
   const message_input = document.querySelector('.message-input');
   const file_input = document.querySelector('#file-input');
-
   const messageForm = document.getElementById('message-form');
-  messageForm.classList.add('sidebar-opened-form');
 
   function setOption(optionId) {
     document.getElementById('option_id').value = optionId;
