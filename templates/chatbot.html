@@ -56,8 +56,6 @@
   /* Typing indicator styles */
   .typing-indicator {
     display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 10px;
     border-radius: 5px;
     background-color: #f1f0f0; /* Match the received message bubble color */
@@ -67,7 +65,7 @@
     width: 8px;
     height: 8px;
     margin: 0 4px;
-    background-color: #bbb;
+    background-color: #888;
     border-radius: 50%;
     animation: dotFluctuate 1.5s infinite linear;
   }
@@ -78,7 +76,11 @@
 
   @keyframes dotFluctuate {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .message-text-next {
+  margin-left: 8px; /* Adjust spacing between the dots and the text as needed */
   }
 
   .card.flex-grow-1 {
@@ -574,13 +576,17 @@
     const loadingWidget = document.createElement('li');
     loadingWidget.className = 'message received'; // Use the same class as other messages for consistent styling
     loadingWidget.innerHTML = `
-      <div class="message-text">
-          <div class="typing-indicator">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-          </div>
-      </div>`;
+    <div class="message-text">
+    <div class="message-content"> <!-- This acts as a flex container -->
+        <div class="typing-indicator">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+        <div class="message-text-next">Estamos en fase beta y los tiempos de espera son de 30 segundos a 2 minutos. Estamos en proceso de mejorar esta función, agradecemos tu paciencia.</div> <!-- Container for the text message -->
+        </div>
+    </div>
+    `;
     messages_list.appendChild(loadingWidget);
 
     fetch(fetchUrl, {
