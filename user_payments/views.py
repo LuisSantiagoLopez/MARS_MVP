@@ -68,8 +68,9 @@ def product_page(request):
 #API CALL FROM STRIPE
 def payment_successful(request):
    stripe.api_key = stripe_api_key
-   logger.debug("Payment successful")
    checkout_id = request.GET.get("session_id", None)
+
+   logger.debug(f"Checkout id at payment successful view: {checkout_id}")
 
    user_payment = UserPayments.objects.last()
    user_payment.checkout_id = checkout_id
@@ -118,7 +119,6 @@ def stripe_webhook(request):
    subscription_id = subscription.get("subscription")
    customer_id = subscription.get("customer")
 
-   logger.debug(f"INFO EVENT: {subscription}")
    logger.debug(f"INFO EVENT: Type {event_type}, checkout id {checkout_id}, customer {customer_id}, subscription id {subscription_id}")
 
    user_payment = UserPayments.objects.get(checkout_id=checkout_id)
