@@ -147,6 +147,10 @@ def stripe_webhook(request):
                   last_payment_subscription_id,
                   items=[{"id": subscription_id},{"price": price_id}]
                )
+
+               last_payment = UserPayments.objects.get(last_payment_subscription_id=subscription_id)
+               last_payment.subscription_status = False
+               last_payment.save()
             
       elif event_type == 'invoice.payment_failed':
             user_payment.subscription_status = False
