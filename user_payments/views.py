@@ -141,13 +141,12 @@ def stripe_webhook(request):
                price_id = user_payment.price_id
 
                logger.debug(f"Transferring one subscription plan to the other")
+               logger.debug(f"last_payment_subscription_id: {last_payment_subscription_id}")
 
                stripe.Subscription.modify(
                   last_payment_subscription_id,
                   items=[{"id": subscription_id},{"price": price_id}]
                )
-
-               logger.debug(f"last_payment_subscription_id: {last_payment_subscription_id}")
 
                last_payment = UserPayments.objects.get(subscription_id=last_payment_subscription_id)
                last_payment.subscription_status = False
