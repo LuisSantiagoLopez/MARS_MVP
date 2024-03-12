@@ -164,6 +164,10 @@
     z-index: 100;
     transition: left 0.3s;
   }
+
+  #sidebar, #reopen-sidebar {
+  display: none !important;
+  }
   
   .sidebar-opened-form {
     left: 300px !important; 
@@ -447,12 +451,15 @@
     const reopenSidebar = document.getElementById('reopen-sidebar');
     const messageForm = document.querySelector('.message-form');
 
+    // Default to hidden styles to avoid flicker
+    sidebar.style.display = '';
+    reopenSidebar.style.display = '';
+
     if (sidebarState === 'false') {
       sidebar.style.display = 'none';
       reopenSidebar.style.display = 'flex';
       messageForm.classList.remove('sidebar-opened-form');
     } else {
-      // Default behavior is to show the sidebar if there's no saved state
       sidebar.style.display = 'block';
       reopenSidebar.style.display = 'none';
       messageForm.classList.add('sidebar-opened-form');
