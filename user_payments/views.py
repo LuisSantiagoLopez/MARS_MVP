@@ -120,13 +120,16 @@ def stripe_webhook(request):
 
    user_payment = UserPayments.objects.last()
 
+   if event_type == "checkout.session.completed":
+      user_payment.checkout_id = checkout_id
+      user_payment.save()
+
    #MONTHLY INVOICE TO THE USER AFTER PAYMENT OR IF PAYMENT FAILED.
-   if event_type in ['invoice.paid', 'invoice.payment_failed']:
+   elif event_type in ['invoice.paid', 'invoice.payment_failed']:
       #CHANGING STATUS OF SUBSCRIPTION WHICH THEN BLOCKS MESSAGE SENT IN CHATBOT/VIEWS
       if event_type == 'invoice.paid':
             #VERIFYING IF THE REQUEST WAS SUCCESSFUL
             user_payment.customer_id = customer_id 
-            user_payment.checkout_id = checkout_id
             user_payment.subscription_id = subscription_id
             user_payment.subscription_status = True 
             user_payment.save()
