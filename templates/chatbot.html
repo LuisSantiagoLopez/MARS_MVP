@@ -445,26 +445,47 @@
 
 {% block scripts %}
 <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const sidebarState = localStorage.getItem('sidebarOpen');
-    const sidebar = document.getElementById('sidebar');
-    const reopenSidebar = document.getElementById('reopen-sidebar');
-    const messageForm = document.querySelector('.message-form');
+window.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.getElementById('sidebar');
+  const reopenSidebar = document.getElementById('reopen-sidebar');
+  const messageForm = document.querySelector('.message-form');
+  
+  // Initially set display properties to avoid flash of unstyled content
+  sidebar.style.display = 'none';
+  reopenSidebar.style.display = 'none';
 
-    // Default to hidden styles to avoid flicker
-    sidebar.style.display = '';
-    reopenSidebar.style.display = '';
+  const sidebarState = localStorage.getItem('sidebarOpen');
+  // Ensure sidebar and reopenSidebar respond correctly to the saved state
+  if (sidebarState === 'false' || sidebarState === null) { // Also consider the case where no state has been saved yet
+    sidebar.style.display = 'none';
+    reopenSidebar.style.display = 'flex'; // Show the reopen button if sidebar is closed
+    messageForm.classList.remove('sidebar-opened-form');
+  } else {
+    sidebar.style.display = 'block';
+    reopenSidebar.style.display = 'none';
+    messageForm.classList.add('sidebar-opened-form');
+  }
+});
 
-    if (sidebarState === 'false') {
-      sidebar.style.display = 'none';
-      reopenSidebar.style.display = 'flex';
-      messageForm.classList.remove('sidebar-opened-form');
-    } else {
-      sidebar.style.display = 'block';
-      reopenSidebar.style.display = 'none';
-      messageForm.classList.add('sidebar-opened-form');
-    }
-  });
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const reopenSidebar = document.getElementById('reopen-sidebar');
+  const messageForm = document.querySelector('.message-form');
+
+  const isSidebarDisplayed = sidebar.style.display === 'block';
+
+  if (isSidebarDisplayed) {
+    sidebar.style.display = 'none';
+    reopenSidebar.style.display = 'flex'; // Ensure the reopen button is shown when the sidebar is closed
+    messageForm.classList.remove('sidebar-opened-form');
+    localStorage.setItem('sidebarOpen', 'false');
+  } else {
+    sidebar.style.display = 'block';
+    reopenSidebar.style.display = 'none'; // Hide the reopen button when the sidebar is open
+    messageForm.classList.add('sidebar-opened-form');
+    localStorage.setItem('sidebarOpen', 'true');
+  }
+}
 </script>
 
 <script>
@@ -500,29 +521,6 @@
         }
     }
   });
-
-  function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const reopenSidebar = document.getElementById('reopen-sidebar');
-  const messageForm = document.querySelector('.message-form');
-
-  // Assuming the sidebar is initially hidden, we check its current CSS display property
-  const isSidebarDisplayed = sidebar.style.display !== 'none' && sidebar.style.display !== '';
-
-  if (isSidebarDisplayed) {
-    // If the sidebar is currently displayed, hide it and update localStorage
-    sidebar.style.display = 'none';
-    reopenSidebar.style.display = 'flex';
-    messageForm.classList.remove('sidebar-opened-form');
-    localStorage.setItem('sidebarOpen', 'false');
-  } else {
-    // If the sidebar is not displayed, show it and update localStorage
-    sidebar.style.display = 'block';
-    reopenSidebar.style.display = 'none';
-    messageForm.classList.add('sidebar-opened-form');
-    localStorage.setItem('sidebarOpen', 'true');
-  }
-}
 
   function deleteSession(event, sessionId) {
   event.stopPropagation(); // Prevent the session change action
