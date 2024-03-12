@@ -159,8 +159,6 @@ def stripe_webhook(request):
    #IF THE SUBSCRIPTION ENDS BECAUSE THE USER CANCELLED, WE WILL ALSO STOP PROVIDING ACCESS TO THE PLATFORM. STRIPE COLLECTS DATA. 
    elif event_type == 'customer.subscription.deleted':
       #CANCEL THEIR SUBSCRIPTION AND STOP GIVING THEM ACCESS 
-      user_payment.subscription_status = False
-      user_payment.save()
 
       logger.debug(f"Subscription deleted successfully")
 
