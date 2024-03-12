@@ -138,19 +138,22 @@ def stripe_webhook(request):
 
             if user_payment.upgrade == True: 
                last_payment_subscription_id = user_payment.last_payment_subscription_id
-               price_id = user_payment.price_id
 
                logger.debug(f"Transferring one subscription plan to the other")
                logger.debug(f"last_payment_subscription_id: {last_payment_subscription_id}")
 
                stripe.Subscription.modify(
                   last_payment_subscription_id,
-                  items=[{"id": subscription_id},{"price": price_id}]
+                  items=[{"id": user_payment.subscription_id, "price": user_payment.price_id}]
                )
+
+               logger.debug(f"Subscription modified successfuly")
 
                last_payment = UserPayments.objects.get(subscription_id=last_payment_subscription_id)
                last_payment.subscription_status = False
                last_payment.save()
+
+               logger.debug(f"Previous subscription deactivated successfuly")
             
       elif event_type == 'invoice.payment_failed':
             user_payment.subscription_status = False
