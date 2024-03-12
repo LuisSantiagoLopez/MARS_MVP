@@ -53,6 +53,27 @@
     height: calc(100vh - 56px);
   }
 
+  /* Loading animation styles */
+  .loading-animation {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .card.flex-grow-1 {
   flex-grow: 1;
   flex-basis: 0;
@@ -543,12 +564,26 @@
     messages_list.appendChild(messageItem);
     message_input.value = '';
 
+    const loadingWidget = document.createElement('li');
+    loadingWidget.className = 'message loading-message';
+    loadingWidget.innerHTML = `
+        <div class="message-text">
+            <div class="message-content">
+                <div class="loading-animation"></div>
+                <span>Loading...</span>
+            </div>
+        </div>`;
+    messages_list.appendChild(loadingWidget);
+
     fetch(fetchUrl, {
       method: 'POST',
       body: formData
     })
       .then(response => response.json())
       .then(data => {
+        scrollToBottom();
+        messages_list.removeChild(loadingWidget);
+
         const session_id = data.session_id
         const image_path_url = data.image_path_url;
         const response = data.response;
@@ -578,11 +613,10 @@
         messages_list.appendChild(message_item);
         messages_list.scrollTop = messages_list.scrollHeight;
 
-        scrollToBottom(); 
-
         if (!currentSessionId) {
           window.location.href = `/chatbot/${session_id}/`;
         }
+        scrollToBottom();
       });
   });
 
