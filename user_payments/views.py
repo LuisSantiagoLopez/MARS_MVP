@@ -116,7 +116,6 @@ def stripe_webhook(request):
    subscription_id = subscription.get("subscription")
    customer_id = subscription.get("customer")
 
-   logger.debug(f"INFO EVENT: {subscription}")
    logger.debug(f"INFO EVENT: Type {event_type}, checkout id {checkout_id}, customer {customer_id}, subscription id {subscription_id}")
 
    user_payment = UserPayments.objects.last()
