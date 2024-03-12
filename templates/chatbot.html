@@ -441,6 +441,26 @@
 
 {% block scripts %}
 <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const sidebarState = localStorage.getItem('sidebarOpen');
+    const sidebar = document.getElementById('sidebar');
+    const reopenSidebar = document.getElementById('reopen-sidebar');
+    const messageForm = document.querySelector('.message-form');
+
+    if (sidebarState === 'false') {
+      sidebar.style.display = 'none';
+      reopenSidebar.style.display = 'flex';
+      messageForm.classList.remove('sidebar-opened-form');
+    } else {
+      // Default behavior is to show the sidebar if there's no saved state
+      sidebar.style.display = 'block';
+      reopenSidebar.style.display = 'none';
+      messageForm.classList.add('sidebar-opened-form');
+    }
+  });
+</script>
+
+<script>
   const baseUrl = '/chatbot/';
   const currentPath = window.location.pathname;
   const pathSegments = currentPath.split('/').filter(Boolean); // Split by '/' and remove any empty strings
@@ -477,15 +497,20 @@
   function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   const reopenSidebar = document.getElementById('reopen-sidebar');
+  const messageForm = document.querySelector('.message-form');
 
-  if (sidebar.style.display === 'none') {
-    sidebar.style.display = 'block';
-    reopenSidebar.style.display = 'none'; // Hide arrow when sidebar is open
-    messageForm.classList.add('sidebar-opened-form');
-  } else {
+  const isSidebarDisplayed = sidebar.style.display !== 'none';
+
+  if (isSidebarDisplayed) {
     sidebar.style.display = 'none';
-    reopenSidebar.style.display = 'flex'; // Show arrow when sidebar is closed
+    reopenSidebar.style.display = 'flex';
     messageForm.classList.remove('sidebar-opened-form');
+    localStorage.setItem('sidebarOpen', 'false');
+  } else {
+    sidebar.style.display = 'block';
+    reopenSidebar.style.display = 'none';
+    messageForm.classList.add('sidebar-opened-form');
+    localStorage.setItem('sidebarOpen', 'true');
   }
   }
 
