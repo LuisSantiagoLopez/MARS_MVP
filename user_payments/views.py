@@ -70,11 +70,7 @@ def payment_successful(request):
    stripe.api_key = stripe_api_key
    checkout_id = request.GET.get("session_id", None)
 
-   logger.debug(f"Checkout id at payment successful view: {checkout_id}")
-
-   user_payment = UserPayments.objects.last()
-   user_payment.checkout_id = checkout_id
-   user_payment.save()
+   logger.debug(f"Session id at payment successful view: {checkout_id}")
 
    #INSTEAD OF SENDING THE USER TO AN ADDITIONAL WEBSITE, WE'LL REDRECT THEM TO THE CHATBOT WITH A MESSAGE THAT IS ALSO EMBEDDED INSIDE THE CHATBOT.HTML TEMPLATE
    messages.add_message(request, messages.INFO, "Gracias por volverte parte de nuestra comunidad, ya puedes chatear con MARS o crear más publicaciones.")
@@ -119,9 +115,10 @@ def stripe_webhook(request):
    subscription_id = subscription.get("subscription")
    customer_id = subscription.get("customer")
 
+   logger.debug(f"INFO EVENT: {subscription}")
    logger.debug(f"INFO EVENT: Type {event_type}, checkout id {checkout_id}, customer {customer_id}, subscription id {subscription_id}")
 
-   user_payment = UserPayments.objects.get(checkout_id=checkout_id)
+   user_payment = UserPayments.objects.last()
 
    #MONTHLY INVOICE TO THE USER AFTER PAYMENT OR IF PAYMENT FAILED.
    if event_type in ['invoice.paid', 'invoice.payment_failed']:
@@ -129,6 +126,7 @@ def stripe_webhook(request):
       if event_type == 'invoice.paid':
             #VERIFYING IF THE REQUEST WAS SUCCESSFUL
             user_payment.customer_id = customer_id 
+            user_payment.checkout_id = checkout_id
             user_payment.subscription_id = subscription_id
             user_payment.subscription_status = True 
             user_payment.save()
@@ -146,6 +144,7 @@ def stripe_webhook(request):
             
       elif event_type == 'invoice.payment_failed':
             user_payment.subscription_status = False
+            user_payment.save()
 
    #IF THE SUBSCRIPTION ENDS BECAUSE THE USER CANCELLED, WE WILL ALSO STOP PROVIDING ACCESS TO THE PLATFORM. STRIPE COLLECTS DATA. 
    elif event_type == 'customer.subscription.deleted':
