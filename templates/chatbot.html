@@ -322,7 +322,7 @@
                       <!--Form de stripe p1-->
                       
                       {% if subscription_name ==  "Plus" %}
-                      <a href="{% url 'customer_portal' %}" class="btn-secondary">Ver tu plan</a>
+                      <a href="{% url 'customer_portal' %}" class="btn btn-secondary">Ver tu plan</a>
 
                       {% elif subscription_name == "Pro" %}
                       <form id="paymentForm" action="{% url 'product_page' %}" method="POST">
@@ -361,7 +361,7 @@
 
                       <!--Form de stripe p2-->
                       {% if subscription_name ==  "Pro" %}
-                      <a href="{% url 'customer_portal' %}" class="btn-secondary">Ver tu plan</a>
+                      <a href="{% url 'customer_portal' %}" class="btn btn-secondary">Ver tu plan</a>
 
                       {% elif subscription_name == "Plus" %}
                       <form id="paymentForm" action="{% url 'product_page' %}" method="POST">
