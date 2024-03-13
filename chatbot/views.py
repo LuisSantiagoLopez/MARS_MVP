@@ -28,6 +28,7 @@ def chatbot(request, session_id=None):
         subscription_name = current_subscription.subscription_name
 
     current_payments = CostPerUser.objects.filter(user=user).order_by("-timestamp").first()
+    available_cost = 0
 
     if current_payments:
         available_cost = current_payments.available_cost
@@ -84,7 +85,7 @@ def chatbot(request, session_id=None):
     else:
         # En el caso en el que el usuario mande un get request, regreso la sesión, los chats y las sesiones de chat.
         context = {
-            "available_cost": available_cost if available_cost else "",
+            "available_cost": available_cost,
             "subscription_name" : subscription_name,
             "session_id": session_id,
             "chats": chat_history_chat_session,
