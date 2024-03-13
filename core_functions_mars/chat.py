@@ -162,7 +162,7 @@ class Assistant:
     def _execute_tool(self, action):
         function_name = action['function']['name']
         function_arg = json.loads(action['function']['arguments'])
-        logger.debug(f"{function_arg}")
+        logger.debug(f"{action['function']}")
 
         tool_functions = {
             "scrapeUserWebsite": scrapeUserWebsite,
