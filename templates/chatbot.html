@@ -331,6 +331,13 @@
 
   </form>
 
+  <!-- Inside the sidebar, at the top -->
+    <div class="card mb-3" style="width: 100%;"> <!-- Ensure it fits the sidebar width -->
+      <div class="card-body">
+        <p class="card-title">${{ available_cost }}</p>
+      </div>
+    </div>
+
 </div>
 
     <!-- Modals -->
@@ -438,14 +445,6 @@
         {% endfor %}
     </div>
     {% endif %}
-
-    <!-- Inside the sidebar, at the top -->
-    <div class="card mb-3" style="width: 100%;"> <!-- Ensure it fits the sidebar width -->
-      <div class="card-body">
-        <p class="card-title">${{ available_cost }}</p>
-      </div>
-    </div>
-
 {% endblock %}
 
 {% block scripts %}
