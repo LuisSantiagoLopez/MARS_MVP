@@ -229,7 +229,7 @@ class Assistant:
         return new_response
     
     def _concat_json_user_message(self, user_message): 
-        json_string = """. Estructura tu respuesta con el siguiente formato JSON:
+        json_string = """. ###Responde en JSON### Estructura tu respuesta con el siguiente formato JSON:
 
             {{
                 "response": "Aquí va la respuesta casi idéntica a la del otro modelo de lenguaje, si acaso con alguna modificación para aumentar la coherencia de la respuesta con respecto al cambio de formato a JSON.",
@@ -239,8 +239,8 @@ class Assistant:
             - Clave "response": Incluye la respuesta modificada dentro de las comillas.
             - Clave "db_id": Si el modelo original generó una imagen y proporcionó un ID, inclúyelo aquí. De lo contrario, omite esta clave.
 
-        Consejos Adicionales:
-            - Mantén la estructura del JSON como se especifica. No alteres las claves ni añadas claves adicionales.
+        Requisitos: 
+            - Mantén la estructura del JSON como se especifica. No alteres las claves ni añadas claves adicionales. Serás penalizado si tu respuesta no es puramente JSON que pueda traducirse a un diccionario en código de python. 
             - Evita incluir la palabra "json" antes de la respuesta.
         """
 
