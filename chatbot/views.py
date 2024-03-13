@@ -54,7 +54,7 @@ def chatbot(request, session_id=None):
     # Si el tipo de request es "POST", interactúo con la clase assistants para responder
     if request.method == "POST":
 
-        if available_cost <= 0:
+        if available_cost and available_cost <= 0:
             current_payments.subscription_status = False
             current_payments.save()
             messages.add_message(request, messages.INFO, "Se te acabaron los créditos, adquiere más para continuar tu uso.")
