@@ -84,7 +84,7 @@ def chatbot(request, session_id=None):
     else:
         # En el caso en el que el usuario mande un get request, regreso la sesión, los chats y las sesiones de chat.
         context = {
-            "available_cost": available_cost,
+            "available_cost": available_cost if available_cost else "",
             "subscription_name" : subscription_name,
             "session_id": session_id,
             "chats": chat_history_chat_session,
