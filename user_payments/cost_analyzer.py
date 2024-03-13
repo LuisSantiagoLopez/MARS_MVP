@@ -3,7 +3,7 @@
 # PASO 3: AUTOMATIZACIONES 
 # PASO 4: DISPLAY GRÁFICO
 
-from user_payments import CostPerUser
+from user_payments.models import CostPerUser
 
 
 class ConversationCostCalculator:
