@@ -16,6 +16,7 @@ class ConversationCostCalculator:
             cost_rate_input = 0.001
             cost_rate_output = 0.002
 
+        total_cost = 0
         cost_instance = (num_tokens_input / 1000 * cost_rate_input) + (num_tokens_output / 1000 * cost_rate_output)
         total_cost += cost_rate_vision_image + photoroom_cost + dalle3_cost + apify_run_cost_usd
 
