@@ -80,7 +80,10 @@ class Assistant:
             
         self.chat_instance_id = save_database_chat_data(chat_session=self.chat_session, user_message=user_message, user_input_image=user_input_image)
 
-        self._send_user_message(user_message)
+        user_message_json = self._concat_json_user_message()
+
+        #self._send_user_message(user_message)
+        self._send_user_message(user_message_json)
 
         # Creamos un nuevo objeto de ConversationCostCalculator 
         self.conversationCostCalculator = ConversationCostCalculator(user=self.user)
@@ -129,9 +132,10 @@ class Assistant:
         last_message = messages.data[0]
         last_message_content = last_message.content[0].text.value
 
-        last_message_content_json = self._add_json_output_specification(last_message_content)
+        #last_message_content_json = self._add_json_output_specification(last_message_content)
+        #text_response, created_image_url = save_database_chat_data(chat_instance_id = self.chat_instance_id, assistant_response = last_message_content_json)
 
-        text_response, created_image_url = save_database_chat_data(chat_instance_id = self.chat_instance_id, assistant_response = last_message_content_json)
+        text_response, created_image_url = save_database_chat_data(chat_instance_id = self.chat_instance_id, assistant_response = last_message_content)
 
         return text_response, created_image_url
 
@@ -218,4 +222,24 @@ class Assistant:
         self.conversationCostCalculator.calculate_chat_and_vision_tokens(response, model)
 
         return new_response
+    
+    def _concat_json_user_message(user_message): 
+        json_string = """. Estructura tu respuesta con el siguiente formato JSON:
+
+            {{
+                "response": "Aquí va la respuesta casi idéntica a la del otro modelo de lenguaje, si acaso con alguna modificación para aumentar la coherencia de la respuesta con respecto al cambio de formato a JSON.",
+                "db_id": "Si aplicable, incluye el id que indica el lugar en la base de datos donde se encuentra el path de la imagen generada por el modelo original. Si no hay ningún id, omite esta clave."
+            }}
+
+            - Clave "response": Incluye la respuesta modificada dentro de las comillas.
+            - Clave "db_id": Si el modelo original generó una imagen y proporcionó un ID, inclúyelo aquí. De lo contrario, omite esta clave.
+
+        Consejos Adicionales:
+            - Mantén la estructura del JSON como se especifica. No alteres las claves ni añadas claves adicionales.
+            - Evita incluir la palabra "json" antes de la respuesta.
+        """
+
+        user_message_json = user_message + json_string
+
+        return user_message_json
 
