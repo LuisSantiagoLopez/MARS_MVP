@@ -223,7 +223,7 @@ class Assistant:
 
         return new_response
     
-    def _concat_json_user_message(user_message): 
+    def _concat_json_user_message(self, user_message): 
         json_string = """. Estructura tu respuesta con el siguiente formato JSON:
 
             {{
