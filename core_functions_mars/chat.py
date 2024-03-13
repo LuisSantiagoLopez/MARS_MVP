@@ -242,7 +242,19 @@ class Assistant:
         Requisitos: 
             - Mantén la estructura del JSON como se especifica. No alteres las claves ni añadas claves adicionales. Serás penalizado si tu respuesta no es puramente JSON que pueda traducirse a un diccionario en código de python. 
             - Evita incluir la palabra "json" antes de la respuesta.
-        """
+
+            Por ejemplo, NUNCA estructures una respuesta así: 
+            ```json
+            {
+            "response": "respuesta"
+            }
+            ```
+
+            Mejor, estructurala ASÍ:
+            {
+            "response": "respuesta"
+            }
+            """
 
         user_message_json = user_message + json_string
 
