@@ -16,9 +16,12 @@ from .database_management_business_logic import save_database_chat_data, save_ch
 from .settings.settings import openaiclient
 from user_payments.cost_analyzer import ConversationCostCalculator
 from chatbot.models import ChatSession
+import logging
 import os
 import time
 import json
+
+logger = logging.getLogger('application')
 
 class Assistant:
     def __init__(self, user, chat_session_id=None):
@@ -159,6 +162,7 @@ class Assistant:
     def _execute_tool(self, action):
         function_name = action['function']['name']
         function_arg = json.loads(action['function']['arguments'])
+        logger.debug(f"{function_arg}")
 
         tool_functions = {
             "scrapeUserWebsite": scrapeUserWebsite,
