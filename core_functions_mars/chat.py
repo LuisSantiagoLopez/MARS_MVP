@@ -80,7 +80,7 @@ class Assistant:
             
         self.chat_instance_id = save_database_chat_data(chat_session=self.chat_session, user_message=user_message, user_input_image=user_input_image)
 
-        user_message_json = self._concat_json_user_message()
+        user_message_json = self._concat_json_user_message(user_message)
 
         #self._send_user_message(user_message)
         self._send_user_message(user_message_json)
