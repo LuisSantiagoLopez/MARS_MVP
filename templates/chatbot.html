@@ -205,6 +205,14 @@
   border-radius: 4px;
 }
 
+.available-credits {
+  padding: 10px;
+  background: #ccc; /* Similar to the close button */
+  color: #333; /* Ensuring text is visible and consistent */
+  border-bottom: 1px solid #ddd; /* Separates from the next section */
+}
+
+
   @media screen and (max-width: 767px) {
     .sidebar {
     width: 30%;
@@ -228,11 +236,8 @@
 <div class="chat-container">
   <div class="sidebar" id="sidebar">
 
-    <!-- Inside the sidebar, at the top -->
-    <div class="card mb-3" style="width: 100%;"> <!-- Ensure it fits the sidebar width -->
-      <div class="card-body">
-        <p class="card-title">Créditos disponibles {{ available_cost }}</p>
-      </div>
+    <div class="available-credits">
+    Créditos disponibles: {{ available_cost }}
     </div>
 
     <div class="sidebar-close">
