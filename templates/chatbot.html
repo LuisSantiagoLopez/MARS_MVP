@@ -205,11 +205,10 @@
   border-radius: 4px;
 }
 
-.available-credits {
-  padding: 10px;
-  background: #ccc; /* Similar to the close button */
-  color: #333; /* Ensuring text is visible and consistent */
-  border-bottom: 1px solid #ddd; /* Separates from the next section */
+.credits-info {
+    background-color: #f4f4f4; /* Matching the sidebar background */
+    border-bottom: 1px solid #ddd; /* Consistent with sidebar design */
+    color: #333; /* Ensure text is readable and consistent with sidebar */
 }
 
 
@@ -236,12 +235,12 @@
 <div class="chat-container">
   <div class="sidebar" id="sidebar">
 
-    <div class="available-credits">
-    Créditos disponibles: {{ available_cost }}
-    </div>
-
     <div class="sidebar-close">
       <button onclick="toggleSidebar()">Close</button>
+    </div>
+
+    <div class="credits-info px-3 py-2">
+    <span>Créditos: <strong>{{ available_cost }}</strong></span>
     </div>
 
     <!-- Inside the sidebar, at the bottom -->
