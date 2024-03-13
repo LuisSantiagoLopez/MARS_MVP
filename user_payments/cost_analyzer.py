@@ -5,6 +5,7 @@
 
 from user_payments import CostPerUser
 
+
 class ConversationCostCalculator:
     def __init__(self, user):
         self.user = user 
