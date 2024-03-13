@@ -19,8 +19,3 @@ class Chat(models.Model):
     image_path = models.ImageField(null=True, blank=True, upload_to="saved_images")
     user_input_image = models.ImageField(null=True, blank=True, upload_to="downloaded_images")
     created_at = models.DateField(auto_now_add=True)
-
-class CostPerUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    available_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
