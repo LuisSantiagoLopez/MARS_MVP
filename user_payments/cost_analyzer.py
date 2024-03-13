@@ -16,23 +16,25 @@ class ConversationCostCalculator:
             cost_rate_input = 0.001
             cost_rate_output = 0.002
 
-        total_cost = 0
+        cost_instance = 0
         cost_instance = (num_tokens_input / 1000 * cost_rate_input) + (num_tokens_output / 1000 * cost_rate_output)
-        total_cost += cost_rate_vision_image + photoroom_cost + dalle3_cost + apify_run_cost_usd
+        cost_instance += cost_rate_vision_image + photoroom_cost + dalle3_cost + apify_run_cost_usd
+
+        cost_instance_pesos = cost_instance * 16.67
 
         previous_cost_user = CostPerUser.objects.filter(user=self.user).latest('timestamp')
 
         previous_available_cost = float(previous_cost_user.available_cost)
         previous_accumulated_cost = float(previous_cost_user.accumulated_cost)
 
-        available_cost = previous_available_cost - cost_instance
-        accumulated_cost = previous_accumulated_cost + cost_instance
+        available_cost = previous_available_cost - cost_instance_pesos
+        accumulated_cost = previous_accumulated_cost + cost_instance_pesos
 
         CostPerUser.objects.create(
         user=self.user,
         accumulated_cost=accumulated_cost, 
         available_cost=available_cost, 
-        cost_instance=cost_instance,
+        cost_instance=cost_instance_pesos,
         model=model,
         use_case=use_case,
         context_tokens=num_tokens_input,
