@@ -28,7 +28,6 @@ class ConversationCostCalculator:
         accumulated_cost=accumulated_cost, 
         available_cost=available_cost, 
         cost_instance=cost_instance,
-        available_cost=available_cost, 
         model=model,
         use_case=use_case,
         context_tokens=num_tokens_input,
