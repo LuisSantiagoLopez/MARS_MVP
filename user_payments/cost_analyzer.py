@@ -22,8 +22,11 @@ class ConversationCostCalculator:
 
         previous_cost_user = CostPerUser.objects.filter(user=self.user).latest('timestamp')
 
-        available_cost = previous_cost_user.available_cost - cost_instance
-        accumulated_cost = previous_cost_user.accumulated_cost + cost_instance
+        previous_available_cost = previous_cost_user.available_cost
+        previous_accumulated_cost = previous_cost_user.accumulated_cost
+
+        available_cost = previous_available_cost - cost_instance
+        accumulated_cost = previous_accumulated_cost + cost_instance
 
         CostPerUser.objects.create(
         user=self.user,
