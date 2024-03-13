@@ -14,7 +14,7 @@ from .functions.generateInstagramImage import generateInstagramImage
 from .functions.generateInstagramCaption import generateInstagramCaption
 from .database_management_business_logic import save_database_chat_data, save_chat_session
 from .settings.settings import openaiclient
-from .cost_analysis.cost_analyzer import ConversationCostCalculator
+from user_payments.cost_analyzer import ConversationCostCalculator
 from chatbot.models import ChatSession
 import os
 import time
