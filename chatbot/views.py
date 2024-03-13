@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from .models import Chat, ChatSession
 from core_functions_mars.chat import Assistant
 from django.contrib.auth.decorators import login_required
-from user_payments.models import UserPayments
+from user_payments.models import UserPayments, CostPerUser
 from django.contrib import messages
 
 
@@ -24,11 +24,13 @@ def chatbot(request, session_id=None):
 
     subscription_name = ""
     current_subscription = UserPayments.objects.filter(app_user=user).order_by("-created_at").first()
-
     if current_subscription:
         subscription_name = current_subscription.subscription_name
 
-    # Filtro de todas las sesiones para mostrarlas en el frontend   
+    current_payments = CostPerUser.objects.filter(user=user).order_by("-timestamp").first()
+    available_cost = current_payments.available_cost
+
+    # Filtro de todas las sesiones para mostrarlas en el frontend 
     all_chat_sessions = ChatSession.objects.filter(user=user)
     # Inicio historial de chats vacío por si la conversación no tiene chats 
     chat_history_chat_session = Chat.objects.none()
@@ -41,10 +43,6 @@ def chatbot(request, session_id=None):
         # Extraigo los chats de la sesión para regresarlos al front-end
         chat_history_chat_session = Chat.objects.filter(chat_session=current_session)
 
-        """debugging"""
-        print(session_id)
-        for chat in chat_history_chat_session:
-            print(chat.message)
     else:
         # Si no existe una sesión activa, inicio session_id como None inicialmente
         session_id = None
@@ -53,6 +51,12 @@ def chatbot(request, session_id=None):
 
     # Si el tipo de request es "POST", interactúo con la clase assistants para responder
     if request.method == "POST":
+
+        if available_cost <= 0:
+            current_payments.subscription_status = False
+            current_payments.save()
+            messages.add_message(request, messages.INFO, "Se te acabaron los créditos, adquiere más para continuar tu uso.")
+            return redirect("/chatbot/")
 
         if not current_subscription or current_subscription.subscription_status == False: 
             messages.add_message(request, messages.INFO, "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'.")
@@ -78,6 +82,7 @@ def chatbot(request, session_id=None):
     else:
         # En el caso en el que el usuario mande un get request, regreso la sesión, los chats y las sesiones de chat.
         context = {
+            "available_cost": available_cost,
             "subscription_name" : subscription_name,
             "session_id": session_id,
             "chats": chat_history_chat_session,

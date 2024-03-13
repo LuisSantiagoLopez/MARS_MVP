@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from user_payments.models import UserPayments
 from dotenv import load_dotenv
 from django.contrib import messages
+from user_payments.models import CostPerUser
 import stripe
 import logging
 import os
@@ -134,9 +135,19 @@ def stripe_webhook(request):
             user_payment.subscription_status = True 
             user_payment.save()
 
+            credits_plus = 50 # Reemplaza por el precio real
+            credits_pro = 300 # Reemplaza por el precio real
+
+            available_cost = credits_plus if user_payment.subscription_name == "Plus" else credits_pro
+            max_cost = available_cost
+
             logger.debug(f"Invoice paid successfully.")
 
             if user_payment.upgrade == True: 
+               cost_user = CostPerUser.objects.filter(user=user_payment.app_user).latest('timestamp')
+               # If found, update available_cost by adding new credits
+               available_cost += cost_user.available_cost 
+
                last_payment_subscription_id = user_payment.last_payment_subscription_id
 
                logger.debug(f"Transferring one subscription plan to the other")
@@ -151,6 +162,8 @@ def stripe_webhook(request):
                last_payment.save()
 
                logger.debug(f"Previous subscription deactivated successfuly")
+
+            cost_user = CostPerUser.objects.create(user=user_payment.app_user,available_cost=available_cost, use_case="Subscription created.")
             
       elif event_type == 'invoice.payment_failed':
             user_payment.subscription_status = False

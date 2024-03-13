@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserPayments
+from .models import UserPayments, CostPerUser
 
 class UserPaymentsAdmin(admin.ModelAdmin):
     list_display = ('app_user', 'subscription_name', 'subscription_status', 'checkout_id', 'subscription_id', 'customer_id', 'created_at', 'upgrade')
@@ -14,5 +14,5 @@ class UserPaymentsAdmin(admin.ModelAdmin):
             return self.readonly_fields + ('app_user', 'customer_id')
         return self.readonly_fields
 
-
 admin.site.register(UserPayments, UserPaymentsAdmin)
+admin.site.register(CostPerUser)
