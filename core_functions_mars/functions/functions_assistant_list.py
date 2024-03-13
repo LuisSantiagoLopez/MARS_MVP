@@ -32,7 +32,7 @@ understandUserProductFunclist = {
     "type": "function",
     "function": {
         "name": "understandUserProduct",
-        "description": "Entiende el producto que el usuario quiere promocionar en su Instagram.",
+        "description": "Puedes ver el producto del usuario y entenderlo.",
         "parameters": {
             "type": "object",
             "properties": {
