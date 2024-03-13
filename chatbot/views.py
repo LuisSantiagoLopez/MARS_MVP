@@ -28,7 +28,9 @@ def chatbot(request, session_id=None):
         subscription_name = current_subscription.subscription_name
 
     current_payments = CostPerUser.objects.filter(user=user).order_by("-timestamp").first()
-    available_cost = current_payments.available_cost
+
+    if current_payments:
+        available_cost = current_payments.available_cost
 
     # Filtro de todas las sesiones para mostrarlas en el frontend 
     all_chat_sessions = ChatSession.objects.filter(user=user)
