@@ -52,7 +52,7 @@ def understandUserProduct(chat_instance_id, conversationCostCalculator, descripc
         ],
         max_tokens=300,
     )
-
+    logger.info(f"Image encoded in base64: {base64_image}")
     logger.info(f"OpenAI completion request sent for chat session: {chat_session}")
 
     # calcula costos de vision
