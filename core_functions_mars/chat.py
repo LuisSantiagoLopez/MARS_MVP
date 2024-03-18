@@ -134,7 +134,7 @@ class Assistant:
 
         last_message = messages.data[0]
         last_message_content = last_message.content[0].text.value
-        logger.debug(f"last_message_content: {last_message_content}")
+        logger.debug(f"Message content: {last_message_content}")
 
         #last_message_content_json = self._add_json_output_specification(last_message_content)
         #text_response, created_image_url = save_database_chat_data(chat_instance_id = self.chat_instance_id, assistant_response = last_message_content_json)
