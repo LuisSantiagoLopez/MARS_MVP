@@ -64,6 +64,10 @@ def chatbot(request, session_id=None):
         if not current_subscription or current_subscription.subscription_status == False: 
             messages.add_message(request, messages.INFO, "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'.")
             return redirect("/chatbot/")
+        
+        ###ESTO TIENES QUE QUITARLO PARA QUE OTROS PUEDAN USAR MARS 
+        if user.username != "luissantiago": 
+            return redirect("/chatbot/") 
 
         # Extraigo el texto y la posible imagen que el usuario mandó
         user_message = request.POST.get("message")
