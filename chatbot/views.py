@@ -5,8 +5,10 @@ from core_functions_mars.chat import Assistant
 from django.contrib.auth.decorators import login_required
 from user_payments.models import UserPayments, CostPerUser
 from django.contrib import messages
+import logging
 import math 
 
+logger = logging.getLogger('application')
 
 @login_required(login_url = "/login/")
 def chatbot(request, session_id=None):
@@ -48,6 +50,7 @@ def chatbot(request, session_id=None):
     if request.method == "POST":
 
         if not current_subscription or current_subscription.subscription_status == False: 
+            logger.debug(f"NO CURRENT SUBSCRIPTION")
             messages.add_message(request, messages.INFO, "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'.")
             return redirect("/chatbot/")
         
