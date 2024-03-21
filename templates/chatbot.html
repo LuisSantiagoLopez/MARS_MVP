@@ -450,6 +450,7 @@
         {% endfor %}
     </div>
     {% endif %}
+
 {% endblock %}
 
 {% block scripts %}
@@ -628,6 +629,11 @@ function toggleSidebar() {
     })
       .then(response => response.json())
       .then(data => {
+
+        if (data.alert) {
+          alert(data.message);
+        }
+
         scrollToBottom();
         messages_list.removeChild(loadingWidget);
 

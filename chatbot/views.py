@@ -4,6 +4,7 @@ from .models import Chat, ChatSession
 from core_functions_mars.chat import Assistant
 from django.contrib.auth.decorators import login_required
 from user_payments.models import UserPayments, CostPerUser
+from django.http import JsonResponse
 from django.contrib import messages
 import logging
 import math 
@@ -50,15 +51,16 @@ def chatbot(request, session_id=None):
     if request.method == "POST":
 
         if not current_subscription or current_subscription.subscription_status == False: 
-            logger.debug(f"NO CURRENT SUBSCRIPTION")
-            messages.add_message(request, messages.INFO, "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'.")
-            return redirect("/chatbot/")
+            return JsonResponse({
+            "alert": True,
+            "message": "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'."
+            })
         
         if available_cost and available_cost <= 0:
-            current_payments.subscription_status = False
-            current_payments.save()
-            messages.add_message(request, messages.INFO, "Se te acabaron los créditos, adquiere más para continuar tu uso.")
-            return redirect("/chatbot/")
+            return JsonResponse({
+            "alert": True,
+            "message": "Se te acabaron los créditos, adquiere más para continuar tu uso."
+            })
         
         ###ESTO TIENES QUE QUITARLO PARA QUE OTROS PUEDAN USAR MARS 
         if user.username != "prueba12": 
