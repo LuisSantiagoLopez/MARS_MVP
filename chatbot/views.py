@@ -106,7 +106,7 @@ def get_user_subscription_info(user):
     Retrieves the subscription name and available cost for a given user.
 
     Args:
-        user (User): The user for whom to retrieve subscription information.
+        User: The user for whom to retrieve subscription information.
 
     Returns:
         tuple: A tuple containing the subscription name (str) and available cost (int or float).
@@ -125,4 +125,4 @@ def get_user_subscription_info(user):
     if current_payments:
         available_cost = current_payments.available_cost
 
-    return current_payments, current_subscription, available_cost, subscription_name
+    return current_payments, available_cost, subscription_name, current_subscription
