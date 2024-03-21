@@ -632,7 +632,7 @@ function toggleSidebar() {
 
         if (data.alert) {
           alert(data.message);
-        }
+        } else { // Closed at the end
 
         scrollToBottom();
         messages_list.removeChild(loadingWidget);
@@ -676,6 +676,7 @@ function toggleSidebar() {
           window.location.href = `/chatbot/${session_id}/`;
         }
         scrollToBottom();
+      }
       });
   });
 
