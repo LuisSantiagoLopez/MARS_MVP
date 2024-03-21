@@ -5,6 +5,7 @@ from core_functions_mars.chat import Assistant
 from django.contrib.auth.decorators import login_required
 from user_payments.models import UserPayments, CostPerUser
 from django.contrib import messages
+import math 
 
 
 @login_required(login_url = "/login/")
@@ -123,6 +124,6 @@ def get_user_subscription_info(user):
     # Retrieve the most recent payment record for the user
     current_payments = CostPerUser.objects.filter(user=user).order_by("-timestamp").first()
     if current_payments:
-        available_cost = current_payments.available_cost
+        available_cost = math.floor(current_payments.available_cost)
 
     return current_payments, available_cost, subscription_name, current_subscription
