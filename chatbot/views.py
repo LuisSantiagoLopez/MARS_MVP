@@ -47,14 +47,14 @@ def chatbot(request, session_id=None):
     # Si el tipo de request es "POST", interactúo con la clase assistants para responder
     if request.method == "POST":
 
+        if not current_subscription or current_subscription.subscription_status == False: 
+            messages.add_message(request, messages.INFO, "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'.")
+            return redirect("/chatbot/")
+        
         if available_cost and available_cost <= 0:
             current_payments.subscription_status = False
             current_payments.save()
             messages.add_message(request, messages.INFO, "Se te acabaron los créditos, adquiere más para continuar tu uso.")
-            return redirect("/chatbot/")
-
-        if not current_subscription or current_subscription.subscription_status == False: 
-            messages.add_message(request, messages.INFO, "Estamos en fase beta, por lo que las funciones actuales son pagadas. ¿Estás listo para invertir en tu marketing y crecer en redes sociales? Presiona en tu perfil en la esquina inferior izquierda y selecciona 'Mi Plan'.")
             return redirect("/chatbot/")
         
         ###ESTO TIENES QUE QUITARLO PARA QUE OTROS PUEDAN USAR MARS 
@@ -120,10 +120,14 @@ def get_user_subscription_info(user):
     current_subscription = UserPayments.objects.filter(app_user=user).order_by("-created_at").first()
     if current_subscription:
         subscription_name = current_subscription.subscription_name
+    else:
+        current_subscription = None
 
     # Retrieve the most recent payment record for the user
     current_payments = CostPerUser.objects.filter(user=user).order_by("-timestamp").first()
     if current_payments:
         available_cost = math.floor(current_payments.available_cost)
+    else: 
+        current_payments = None
 
     return current_payments, available_cost, subscription_name, current_subscription
