@@ -22,16 +22,7 @@ def chatbot(request, session_id=None):
     # Extraigo el usuario
     user = request.user
 
-    subscription_name = ""
-    current_subscription = UserPayments.objects.filter(app_user=user).order_by("-created_at").first()
-    if current_subscription:
-        subscription_name = current_subscription.subscription_name
-
-    current_payments = CostPerUser.objects.filter(user=user).order_by("-timestamp").first()
-    available_cost = 0
-
-    if current_payments:
-        available_cost = current_payments.available_cost
+    current_payments, available_cost, subscription_name, current_subscription = get_user_subscription_info(user)
 
     # Filtro de todas las sesiones para mostrarlas en el frontend 
     all_chat_sessions = ChatSession.objects.filter(user=user)
@@ -76,12 +67,15 @@ def chatbot(request, session_id=None):
         # Creo una respuesta 
         assistant_response_text, generated_image_path_url = assistant.generate_assistant_response(user_message=user_message, user_input_image=user_input_image)
 
+        current_payments, available_cost, subscription_name, current_subscription = get_user_subscription_info(user)
+
         # Armo el JSON que recibirá el frontend 
         context = {
         "message": user_message,
         "response": assistant_response_text, 
         "image_path_url": generated_image_path_url,
         "session_id": assistant.chat_session_id,
+        "updated_cost": available_cost,
         }
         
         return JsonResponse(context)
@@ -106,3 +100,29 @@ def delete_session(request, session_id):
             return JsonResponse({'status': 'success'}, status=200)
         except ChatSession.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Session not found'}, status=404)
+
+def get_user_subscription_info(user):
+    """
+    Retrieves the subscription name and available cost for a given user.
+
+    Args:
+        user (User): The user for whom to retrieve subscription information.
+
+    Returns:
+        tuple: A tuple containing the subscription name (str) and available cost (int or float).
+    """
+    # Default values if no subscription or payments are found
+    subscription_name = ""
+    available_cost = 0
+
+    # Retrieve the most recent subscription for the user
+    current_subscription = UserPayments.objects.filter(app_user=user).order_by("-created_at").first()
+    if current_subscription:
+        subscription_name = current_subscription.subscription_name
+
+    # Retrieve the most recent payment record for the user
+    current_payments = CostPerUser.objects.filter(user=user).order_by("-timestamp").first()
+    if current_payments:
+        available_cost = current_payments.available_cost
+
+    return current_payments, current_subscription, available_cost, subscription_name

@@ -240,7 +240,7 @@
     </div>
 
     <div class="credits-info px-3 py-2">
-    <span>Créditos: <strong>{{ available_cost }}</strong></span>
+    <span>Créditos: <strong id="credits-display">{{ available_cost }}</strong></span>
     </div>
 
     <!-- Inside the sidebar, at the bottom -->
@@ -634,6 +634,7 @@ function toggleSidebar() {
         const session_id = data.session_id
         const image_path_url = data.image_path_url;
         const response = data.response;
+        const updated_cost = data.updated_cost;
         const message_item = document.createElement('li');
         message_item.classList.add('message', 'received');
         message_item.innerHTML = `
@@ -646,6 +647,11 @@ function toggleSidebar() {
             </div>
         </div>
           `;
+
+        const creditsDisplay = document.getElementById('credits-display');
+          if (creditsDisplay) {
+            creditsDisplay.textContent = updated_cost; 
+        }
 
         if (image_path_url) {
             const image_wrapper = document.createElement('div');
