@@ -264,7 +264,7 @@
       <ul class="dropdown-menu dropdown-menu-end drop-up" aria-labelledby="userMenuButton">
         
         <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#planModal">Mi plan</a></li>
-        <li><a class="dropdown-item" href="#">Configuraciones</a></li>
+        <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#contactModal">Contáctanos</a></li> 
       </ul>
     </div>
 
@@ -454,6 +454,33 @@
           </div>
         </div>
     <!--Fin Modal 1-->
+
+    <!-- Modal 2: Contáctanos -->
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="contactModalLabel">Contáctanos</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Formspree Form -->
+            <form action="https://formspree.io/f/xkndvyde" method="POST">
+              <div class="mb-3">
+                <label for="email" class="form-label">Tu correo electrónico:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+              </div>
+              <div class="mb-3">
+                <label for="message" class="form-label">Tu mensaje:</label>
+                <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Enviar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Fin Modal 2-->
 
     <!-- Mensajes de error -->
     {% if messages %}
