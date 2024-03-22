@@ -124,7 +124,7 @@ def get_user_subscription_info(user):
     available_cost = 0
 
     # Retrieve the most recent subscription for the user
-    current_subscription = UserPayments.objects.filter(app_user=user).order_by("-created_at").first()
+    current_subscription = UserPayments.objects.filter(app_user=user, is_active=True).order_by("-created_at").first()
     if current_subscription:
         subscription_name = current_subscription.subscription_name
     else:
