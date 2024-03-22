@@ -540,22 +540,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
 window.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.querySelector('.message-input');
+    const messageForm = document.querySelector('#message-form'); // Make sure this selector matches your form
 
-    if (!messageInput) {
-        console.error('Message input not found');
-        return;
-    }
-
+    // Adjust the height of the textarea based on its content
     const adjustHeight = () => {
-        messageInput.style.height = 'auto'; // Allow it to shrink if needed
-        messageInput.style.height = messageInput.scrollHeight + 'px'; // Adjust height
+        messageInput.style.height = 'auto';
+        messageInput.style.height = messageInput.scrollHeight + 'px';
     };
 
-    // Adjust on input
     messageInput.addEventListener('input', adjustHeight);
-
-    // Initial adjustment
     adjustHeight();
+
+    // Listen for keydown events on the message input to intercept Enter key presses
+    messageInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) { // Check if Enter is pressed without the Shift key
+            event.preventDefault(); // Prevent the default action (creating a new line)
+            messageForm.dispatchEvent(new Event('submit', { cancelable: true })); // Programmatically trigger the form submission
+        } else {
+            adjustHeight(); // Adjust the height if the user is actually adding a new line
+        }
+    });
 });
 
 </script>
