@@ -496,13 +496,40 @@ function toggleSidebar() {
   }
 }
 
-window.addEventListener('DOMContentLoaded', (event) => {
-    document.querySelectorAll('.message-content').forEach(element => {
-        // Get the current text, trim it, and set it back
-        let textContent = element.textContent.trim();
-        element.textContent = textContent;
+window.addEventListener('DOMContentLoaded', () => {
+    // Function to trim the text content of a single element
+    const trimTextContent = (element) => {
+        element.textContent = element.textContent.trim();
+    };
+
+    // Observe changes in the message list container
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                // Check if the added node is a message and has a message-content class
+                if (node.nodeType === 1 && node.classList.contains('message')) { // Node type 1 is an element
+                    const messageContent = node.querySelector('.message-content');
+                    if (messageContent) {
+                        trimTextContent(messageContent);
+                    }
+                }
+            });
+        });
     });
+
+    // Configuration for the observer: watch for added nodes
+    const config = { childList: true };
+
+    // Start observing the message list container
+    const messagesList = document.querySelector('.messages-list');
+    if (messagesList) {
+        observer.observe(messagesList, config);
+    }
+
+    // Initial trim for existing messages
+    document.querySelectorAll('.message-content').forEach(trimTextContent);
 });
+
 
 </script>
 
