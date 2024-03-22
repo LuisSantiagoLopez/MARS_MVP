@@ -49,6 +49,7 @@ def product_page(request):
       #CHECKOUT SESSION FROM STRIPE'S API ENDPOINTS. REDIRECTION TO STRIPE'S URL NECESSARY AFTER CREATING THE SESSION. 
       checkout_session = stripe.checkout.Session.create(
          payment_method_types = ["card"],
+         locale="es",
          line_items = [
                {
                   "price": price_id,
