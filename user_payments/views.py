@@ -24,19 +24,19 @@ def product_page(request):
       option_id = request.POST.get("option_id")
       if option_id == "Plus":
          subscription_name = "Plus"
-         price_id = "price_1Of2mbCgimrkAXdjv59KSL0K"
+         price_id = "price_1OxDoYCgimrkAXdj1EWMqaYG"
          upgrade = False
       elif option_id == "Pro": 
          subscription_name = "Pro"
-         price_id = "price_1Of2n0CgimrkAXdjn9dXOIVO"
+         price_id = "price_1OxDpHCgimrkAXdjQ13Anje1"
          upgrade = False
       elif option_id == "Plus->Pro":
          subscription_name = "Pro"
-         price_id = "price_1Of2n0CgimrkAXdjn9dXOIVO"
+         price_id = "price_1OxDpHCgimrkAXdjQ13Anje1"
          upgrade = True
       elif option_id == "Pro->Plus": 
          subscription_name = "Plus"
-         price_id = "price_1Of2mbCgimrkAXdjv59KSL0K"
+         price_id = "price_1OxDoYCgimrkAXdj1EWMqaYG"
          upgrade = True
 
       last_payment_subscription_id = ""
