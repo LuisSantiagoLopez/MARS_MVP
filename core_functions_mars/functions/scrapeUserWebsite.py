@@ -73,4 +73,4 @@ def scrapeUserWebsite(url_negocio, conversationCostCalculator):
 
         return website_content
     except Exception as e:
-        return "Hubo un error al realizar la solicitud a la API. ¿Incluiste 'https://' en tu URL y está completa?"
+        return "Hubo un error al realizar la solicitud. ¿Incluiste 'https://' en tu URL y está completa?"
