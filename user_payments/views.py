@@ -136,7 +136,7 @@ def stripe_webhook(request):
             user_payment.save()
 
             credits_plus = 50 # Reemplaza por el precio real
-            credits_pro = 300 # Reemplaza por el precio real
+            credits_pro = 500 # Reemplaza por el precio real
 
             available_cost = credits_plus if user_payment.subscription_name == "Plus" else credits_pro
             max_cost = available_cost
