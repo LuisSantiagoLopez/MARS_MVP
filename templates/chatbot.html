@@ -287,9 +287,7 @@
               <b>MARS</b>
             </div>
             <div class="message-content">
-              <pre>
               Hola {{user.username}}, soy MARS, tu publicista digital. Chatea conmigo para comenzar a crear publicaciones para el Instagram de tu negocio.
-            </pre>
             </div>
           </div>
         </li>
@@ -627,6 +625,9 @@ window.addEventListener('DOMContentLoaded', () => {
   message_form.addEventListener('submit', (event) => {
     event.preventDefault();
 
+    const sendButton = document.querySelector('.btn-send');
+    sendButton.disabled = true;
+
     const message = message_input.value.trim();
     const file = file_input.files[0];
 
@@ -741,6 +742,7 @@ window.addEventListener('DOMContentLoaded', () => {
         messages_list.scrollTop = messages_list.scrollHeight;
 
         scrollToBottom();
+        sendButton.disabled = false;
 
         if (!currentSessionId) {
           window.location.href = `/chatbot/${session_id}/`;
