@@ -579,8 +579,6 @@ function toggleSidebar() {
           messagesBox.scrollTop = messagesBox.scrollHeight; // Scroll to the bottom
     }
 
-    scrollToBottom();
-
     // Append CSRF token to the FormData
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     formData.append('csrfmiddlewaretoken', csrfToken);
@@ -634,7 +632,6 @@ function toggleSidebar() {
           alert(data.message);
         } else { // Closed at the end
 
-        scrollToBottom();
         messages_list.removeChild(loadingWidget);
 
         const session_id = data.session_id
@@ -672,10 +669,11 @@ function toggleSidebar() {
         messages_list.appendChild(message_item);
         messages_list.scrollTop = messages_list.scrollHeight;
 
+        scrollToBottom();
+
         if (!currentSessionId) {
           window.location.href = `/chatbot/${session_id}/`;
         }
-        scrollToBottom();
       }
       });
   });
