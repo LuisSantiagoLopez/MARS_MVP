@@ -631,7 +631,14 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('paymentForm').submit();
   }
 
+  function scrollToBottom() {
+          const messagesBox = document.querySelector('.messages-box');
+          messagesBox.scrollTop = messagesBox.scrollHeight; // Scroll to the bottom
+  }
+
   window.addEventListener('load', () => {
+    scrollToBottom();
+
     const messagePopup = document.getElementById('message-popup');
     if (messagePopup) {
         const messageText = messagePopup.textContent.trim();
@@ -697,11 +704,6 @@ window.addEventListener('DOMContentLoaded', () => {
       formData.append('image', file);
     }
 
-    function scrollToBottom() {
-          const messagesBox = document.querySelector('.messages-box');
-          messagesBox.scrollTop = messagesBox.scrollHeight; // Scroll to the bottom
-    }
-
     // Append CSRF token to the FormData
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     formData.append('csrfmiddlewaretoken', csrfToken);
@@ -743,6 +745,7 @@ window.addEventListener('DOMContentLoaded', () => {
     </div>
     `;
     messages_list.appendChild(loadingWidget);
+    scrollToBottom();
 
     fetch(fetchUrl, {
       method: 'POST',
