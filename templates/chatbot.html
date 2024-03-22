@@ -249,7 +249,7 @@
   <div class="sidebar" id="sidebar">
 
     <div class="sidebar-close">
-      <button onclick="toggleSidebar()">Close</button>
+      <button onclick="toggleSidebar()">Cerrar</button>
     </div>
 
     <div class="credits-info px-3 py-2">
@@ -268,7 +268,7 @@
       </ul>
     </div>
 
-    <div class="session-item" onclick="createSession()">New Chat +</div>
+    <div class="session-item" onclick="createSession()">Nuevo Chat +</div>
     {% for session in chat_sessions %}
       <div class="session-item" onclick="changeSession('{{ session.id }}')">
         Chat {{ session.id }}
@@ -439,7 +439,7 @@
                       {% endif %}
 
                       <br>
-                      
+
                       <ul class="plan-features">
                         <li>Todos los beneficios de Plus, con 500 créditos para ampliar tu alcance</li>
                         <li>Acceso exclusivo a nuestra comunidad privada de negocios en redes sociales</li>
