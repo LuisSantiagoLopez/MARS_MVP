@@ -339,7 +339,7 @@
 
     <label for="file-input" class="btn btn-secondary bg-dark">📷</label>
 
-    <input type="text" class="form-control message-input" placeholder="Chatea con MARS..." name="message" />
+    <textarea class="form-control message-input" placeholder="Chatea con MARS..." name="message"></textarea>
 
     <div class="input-group-append">
       <button type="submit" class="btn btn-primary btn-send bg-dark">Send</button>
@@ -497,9 +497,15 @@ function toggleSidebar() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    // Function to trim the text content of a single element
-    const trimTextContent = (element) => {
-        element.textContent = element.textContent.trim();
+    // Function to trim text nodes within an element
+    const trimTextNodes = (element) => {
+        // Iterate over child nodes
+        element.childNodes.forEach((node) => {
+            // Node type 3 is a text node
+            if (node.nodeType === 3) {
+                node.nodeValue = node.nodeValue.trim();
+            }
+        });
     };
 
     // Observe changes in the message list container
@@ -507,10 +513,10 @@ window.addEventListener('DOMContentLoaded', () => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
                 // Check if the added node is a message and has a message-content class
-                if (node.nodeType === 1 && node.classList.contains('message')) { // Node type 1 is an element
+                if (node.nodeType === 1 && node.classList.contains('message')) {
                     const messageContent = node.querySelector('.message-content');
                     if (messageContent) {
-                        trimTextContent(messageContent);
+                        trimTextNodes(messageContent);
                     }
                 }
             });
@@ -527,7 +533,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initial trim for existing messages
-    document.querySelectorAll('.message-content').forEach(trimTextContent);
+    document.querySelectorAll('.message-content').forEach(trimTextNodes);
 });
 
 window.addEventListener('DOMContentLoaded', () => {
