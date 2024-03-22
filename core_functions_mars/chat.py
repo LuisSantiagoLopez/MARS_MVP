@@ -136,9 +136,6 @@ class Assistant:
         last_message_content = last_message.content[0].text.value
         logger.debug(f"Message content: {last_message_content}")
 
-        #last_message_content_json = self._add_json_output_specification(last_message_content)
-        #text_response, created_image_url = save_database_chat_data(chat_instance_id = self.chat_instance_id, assistant_response = last_message_content_json)
-
         text_response, created_image_url = save_database_chat_data(chat_instance_id = self.chat_instance_id, assistant_response = last_message_content)
 
         return text_response, created_image_url
@@ -189,44 +186,6 @@ class Assistant:
             tool_outputs=tool_outputs
         )
         print("Submitting outputs back to the Assistant...")
-
-    def _add_json_output_specification(self, output):
-        print(f"PRE-JSON: {output}")
-
-        json_instructions = f'''
-        Cuando recibas una respuesta de otro modelo de lenguaje dentro de las triple backticks, por favor Formatea la respuesta siguiendo este esquema JSON:
-
-            {{
-                "response": "Aquí va la respuesta casi idéntica a la del otro modelo de lenguaje, si acaso con alguna modificación para aumentar la coherencia de la respuesta con respecto al cambio de formato a JSON.",
-                "db_id": "Si aplicable, incluye el id que indica el lugar en la base de datos donde se encuentra el path de la imagen generada por el modelo original. Si no hay ningún id, omite esta clave."
-            }}
-
-            - Clave "response": Incluye la respuesta modificada dentro de las comillas.
-            - Clave "db_id": Si el modelo original generó una imagen y proporcionó un ID, inclúyelo aquí. De lo contrario, omite esta clave.
-
-        4. Consejos Adicionales:
-            - Mantén la estructura del JSON como se especifica. No alteres las claves ni añadas claves adicionales.
-            - Evita incluir la palabra "json" antes de la respuesta.
-
-        respuesta del otro modelo de lenguaje: ```{output}```
-        '''
-
-        model = "gpt-4-1106-preview"
-
-        response = openaiclient.chat.completions.create(
-            model=model,
-            response_format={ "type": "json_object" },
-            messages=[
-            {"role": "system", "content": "Tu trabajo es formatear las respuestas de otros modelos de lenguaje a JSON."},
-            {"role": "user", "content": json_instructions},
-            ]
-        )
-
-        new_response = response.choices[0].message.content
-
-        self.conversationCostCalculator.calculate_chat_and_vision_tokens(response, model)
-
-        return new_response
     
     def _concat_json_user_message(self, user_message): 
         json_string = """. ###Responde en JSON### Estructura tu respuesta con el siguiente formato JSON:

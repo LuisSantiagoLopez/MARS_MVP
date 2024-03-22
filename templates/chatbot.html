@@ -13,8 +13,6 @@
   }
 
   .message-content {
-    margin: 0;
-    padding: 0;
     white-space: pre-line;
   }
 
@@ -497,6 +495,15 @@ function toggleSidebar() {
     localStorage.setItem('sidebarOpen', 'false');
   }
 }
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll('.message-content').forEach(element => {
+        // Get the current text, trim it, and set it back
+        let textContent = element.textContent.trim();
+        element.textContent = textContent;
+    });
+});
+
 </script>
 
 <script>
@@ -644,7 +651,7 @@ function toggleSidebar() {
 
         const session_id = data.session_id
         const image_path_url = data.image_path_url;
-        const response = data.response;
+        const response = data.response.trim();
         const updated_cost = data.updated_cost;
         const message_item = document.createElement('li');
         message_item.classList.add('message', 'received');
