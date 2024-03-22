@@ -202,25 +202,31 @@
     margin-top: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     cursor: pointer;
-    display: inline-block;
 }
 
 /* added lines */
-.message-image::after {
-    content: '⬇️'; /* Adjust the content as needed */
-    position: absolute;
-    right: 5px; /* Adjust positioning as needed */
-    bottom: 5px;
-    display: none;
-    padding: 5px;
-    background-color: rgba(0,0,0,0.7); /* Ensure it's visible on top of the image */
-    color: white;
-    border-radius: 50%; /* Circular shape */
-    font-size: 24px; /* Adjust as needed */
+.message-image {
+    position: relative;
+    display: inline-block; /* Ensures the container can hold absolutely positioned elements */
+    cursor: pointer;
+    /* Other styles remain unchanged */
 }
 
-.message-image:hover::after {
-    display: block;
+.download-icon {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    display: none; /* Hidden by default */
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.7); /* Visible on top of the image */
+    color: white;
+    border-radius: 50%;
+    text-decoration: none; /* Removes underline from the link */
+    /* Additional styling for the download icon/button as needed */
+}
+
+.message-image:hover .download-icon {
+    display: block; /* Show the download icon on hover */
 }
 /* added lines */
 
@@ -325,6 +331,8 @@
                   {% if chat.user_input_image %}
                     <div class="message-image">
                       <img src="{{ chat.user_input_image.url }}" alt="Image" style="max-width: 100%; height: auto;">
+                        <!-- Download icon/button (hidden by default, shown on hover) -->
+                        <a href="{{ chat.image_path.url }}" download class="download-icon" aria-label="Download Image">⬇️</a>
                     </div>
                   {% endif %}
                 </div>
