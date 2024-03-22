@@ -12,6 +12,10 @@
     flex-shrink: 0; /* Prevents the sidebar from shrinking */
   }
 
+  .message-content {
+    white-space: pre-wrap;
+  }
+
   /* Custom styles for the user menu */
   .user-menu {
     position: fixed;
@@ -310,9 +314,7 @@
                   <b>MARS</b>
                 </div>
                 <div class="message-content">
-                  <pre>
                   {{ chat.response }}
-                  </pre>
                 </div>
                 {% if chat.image_path %}
                   <div class="message-image">
@@ -595,7 +597,7 @@ function toggleSidebar() {
                 <b>You</b>
             </div>
             <div class="message-content">
-                <pre>${message}</pre>
+                ${message}
             </div>
         </div>`;
     
@@ -650,7 +652,7 @@ function toggleSidebar() {
               <b>MARS</b>
             </div>
             <div class="message-content">
-                <pre>${response}</pre>
+                ${response}
             </div>
         </div>
           `;
