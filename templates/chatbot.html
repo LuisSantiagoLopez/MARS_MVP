@@ -177,11 +177,11 @@
     flex: 1;
     border-radius: 0;
     border-right: none;
-    min-height: 38px !important; /* Minimum height before expanding */
-    height: 38px; /* Initial height */
+    min-height: 38px; /* Minimum initial height */
     overflow-y: hidden; /* Hide vertical scrollbar */
     resize: none; /* Prevent manual resizing by the user */
-  }
+}
+
 
   .btn-send {
     border-radius: 0;
@@ -541,26 +541,23 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-  // Ensure this selector matches your message input element
-  const messageInput = document.querySelector('.message-input');
+    const messageInput = document.querySelector('.message-input');
 
-  if (!messageInput) {
-    console.error('Message input not found');
-    return;
-  }
+    if (!messageInput) {
+        console.error('Message input not found');
+        return;
+    }
 
-  const adjustHeight = () => {
-    // Reset the element's height to its minimum (e.g., 2 rows for a textarea)
-    messageInput.style.height = 'auto';
-    // Adjust the height based on the scrollHeight of the element
-    messageInput.style.height = messageInput.scrollHeight + 'px';
-  };
+    const adjustHeight = () => {
+        messageInput.style.height = 'auto'; // Allow it to shrink if needed
+        messageInput.style.height = messageInput.scrollHeight + 'px'; // Adjust height
+    };
 
-  // Apply adjustment upon user input
-  messageInput.addEventListener('input', adjustHeight);
+    // Adjust on input
+    messageInput.addEventListener('input', adjustHeight);
 
-  // Initial adjustment in case there is already text in the input (e.g., when editing a draft)
-  adjustHeight();
+    // Initial adjustment
+    adjustHeight();
 });
 
 </script>
