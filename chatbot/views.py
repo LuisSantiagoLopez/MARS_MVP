@@ -61,10 +61,6 @@ def chatbot(request, session_id=None):
             "alert": True,
             "message": "Se te acabaron los créditos, adquiere más para continuar tu uso."
             })
-        
-        ###ESTO TIENES QUE QUITARLO PARA QUE OTROS PUEDAN USAR MARS 
-        if user.username != "prueba12": 
-            return redirect("/chatbot/") 
 
         # Extraigo el texto y la posible imagen que el usuario mandó
         user_message = request.POST.get("message")
