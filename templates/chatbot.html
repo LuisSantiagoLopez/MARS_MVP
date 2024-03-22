@@ -201,7 +201,27 @@
     border-radius: 5px;
     margin-top: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
 }
+
+/* added lines */
+.message-image::after {
+    content: '⬇️'; /* This can be replaced with an icon or text like 'Download' */
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    display: none;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 5px;
+    font-size: 20px; /* Adjust as needed */
+}
+
+.message-image:hover::after {
+    display: block;
+}
+/* added lines */
 
 .file-indicator {
   display: inline-block;
@@ -559,6 +579,21 @@ window.addEventListener('DOMContentLoaded', () => {
         } else {
             adjustHeight(); // Adjust the height if the user is actually adding a new line
         }
+    });
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    // Listen for clicks on the message images
+    document.querySelectorAll('.message-image img').forEach(image => {
+        image.addEventListener('click', (e) => {
+            const src = e.target.src; // Get the source of the image
+            const a = document.createElement('a'); // Create a temporary link
+            a.setAttribute('href', src);
+            a.setAttribute('download', ''); // The download attribute can be set to a specific filename if desired
+            document.body.appendChild(a); // Append to the document
+            a.click(); // Trigger the download
+            document.body.removeChild(a); // Clean up
+        });
     });
 });
 
