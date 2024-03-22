@@ -106,6 +106,12 @@ def delete_session(request, session_id):
             return JsonResponse({'status': 'success'}, status=200)
         except ChatSession.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Session not found'}, status=404)
+        
+def privacy_policy(request):
+    return render(request, 'privacy_policy.html')
+
+def terms_and_conditions(request):
+    return render(request, 'terms_and_conditions.html')
 
 def get_user_subscription_info(user):
     """
