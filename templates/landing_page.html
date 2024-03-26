@@ -6,13 +6,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <!--=============== FAVICON ===============-->
-        <link rel="shortcut icon" href="{% static img/favicon.png %}" type="image/x-icon">
+        <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
 
         <!--=============== REMIX ICONS ===============-->
         <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 
         <!--=============== CSS ===============-->
-        <link rel="stylesheet" href="{% static css/styles.css %}">
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
         <title>Responsive landing page headphones</title>
     </head>
@@ -21,7 +21,7 @@
         <header class="header" id="header">
             <nav class="nav container">
                 <a href="#" class="nav__logo">
-                    <img src="{% static img/mars_logo_3.png %}" alt="">
+                    <img src="{% static 'img/mars_logo_3.png' %}" alt="">
                 </a>
 
                 <div class="nav__menu" id="nav-menu">
@@ -56,7 +56,7 @@
             <section class="home section" id="home">
                 <div class="home__container container grid">
                     <div>
-                        <img src="{% static img/home.png %}" alt="" class="home__img">
+                        <img src="{% static 'img/home.png' %}" alt="" class="home__img">
                     </div>
                     
                     <div class="home__data">
@@ -96,7 +96,7 @@
 
                 <div class="case__container container grid">
                     <div>
-                        <img src="{% static img/case.png %}" alt="" class="case__img">
+                        <img src="{% static 'img/case.png' %}" alt="" class="case__img">
                     </div>
 
                     <div class="case__data">
@@ -142,7 +142,7 @@
                     </div>
                     
                     <div>
-                        <img src="{% static img/specs.png %}" alt="" class="specs__img">
+                        <img src="{% static 'img/specs.png' %}" alt="" class="specs__img">
                     </div>
                 </div>
             </section>
@@ -193,7 +193,7 @@
                         </a>
                     </div>
 
-                    <img src="{% static img/discount.png %}" alt="" class="discount__img">
+                    <img src="{% static 'img/discount.png' %}" alt="" class="discount__img">
                 </div>
             </section>
 
@@ -278,6 +278,6 @@
         <script src="https://unpkg.com/scrollreveal"></script>
 
         <!--=============== MAIN JS ===============-->
-        <script src="{% static js/main.js %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
     </body>
 </html>
