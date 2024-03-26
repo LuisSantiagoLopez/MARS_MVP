@@ -104,10 +104,13 @@ def delete_session(request, session_id):
             return JsonResponse({'status': 'error', 'message': 'Session not found'}, status=404)
         
 def privacy_policy(request):
-    return render(request, 'privacy_policy.html')
+    return render(request, "privacy_policy.html")
 
 def terms_and_conditions(request):
-    return render(request, 'terms_and_conditions.html')
+    return render(request, "terms_and_conditions.html")
+
+def landing_page(request): 
+    return render(request, "landing_page.html")
 
 def get_user_subscription_info(user):
     """
@@ -138,3 +141,4 @@ def get_user_subscription_info(user):
         current_payments = None
 
     return current_payments, available_cost, subscription_name, current_subscription
+
