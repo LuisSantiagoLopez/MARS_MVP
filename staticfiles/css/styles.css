@@ -237,7 +237,7 @@ img {
 /*=============== HOME ===============*/
 .home__img {
   width: 250px;
-  position: absolute;
+  /* position: absolute; */
   top: 2rem;
   right: .5rem;
 }
