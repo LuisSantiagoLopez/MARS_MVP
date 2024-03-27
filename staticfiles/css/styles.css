@@ -15,7 +15,7 @@
   --container-color: hsl(var(--hue-color), 4%, 10%);
 
   /* --text-gradient: linear-gradient(hsl(var(--hue-color), 4%, 24%), hsl(var(--hue-color), 4%, 8%)); */
-  --text-gradient: linear-gradient(#F46823, #000000);
+  --text-gradient: linear-gradient(hsl(24, 89%, 54%), hsl(24, 89%, 44%));
   --scroll-thumb-color: hsl(var(--hue-color), 4%, 16%);
   --scroll-thumb-color-alt: hsl(var(--hue-color), 4%, 20%);
   /*========== Font and typography ==========*/
