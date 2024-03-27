@@ -247,7 +247,7 @@ img {
   display: flex;
   flex-direction: column; 
   justify-content: center; 
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
 
 .home__header {
