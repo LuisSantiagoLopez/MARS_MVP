@@ -259,6 +259,7 @@ img {
   line-height: 6rem;
   font-size: var(--biggest-font-size);
   background: var(--text-gradient);
+  margin-bottom: var(--mb-2-5);
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
@@ -266,7 +267,7 @@ img {
 
 .home__subtitle {
   font-size: var(--big-font-size);
-  /* margin-bottom: var(--mb-2-5); */
+  margin-bottom: var(--mb-2-5);
 }
 
 .home__title-description {
