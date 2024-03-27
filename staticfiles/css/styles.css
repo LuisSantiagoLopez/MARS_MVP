@@ -276,7 +276,7 @@ img {
 }
 
 .home__description {
-  /* margin-bottom: var(--mb-2-5); */
+  margin-bottom: var(--mb-2-5);
   line-height: var(--text-line-height);
 }
 
