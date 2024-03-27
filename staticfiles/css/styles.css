@@ -17,7 +17,7 @@
   --text-gradient: linear-gradient(
     to bottom, 
     #F46823 0%, 
-    #F46823 80%, /* Keep orange stable until 80% of the element's height */
+    #F46823 70%, /* Keep orange stable until 80% of the element's height */
     #000000 100% /* Then transition to black quickly */
   );
   --scroll-thumb-color: hsl(var(--hue-color), 4%, 16%);
