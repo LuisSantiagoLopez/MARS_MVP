@@ -266,7 +266,7 @@ img {
 
 .home__subtitle {
   font-size: var(--big-font-size);
-  margin-bottom: var(--mb-2-5);
+  /* margin-bottom: var(--mb-2-5); */
 }
 
 .home__title-description {
