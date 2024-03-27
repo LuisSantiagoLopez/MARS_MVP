@@ -251,7 +251,7 @@ img {
 }
 
 .home__title {
-  position: absolute;
+  /* position: absolute; */
   top: -10rem;
   left: 1rem;
   line-height: 6rem;
