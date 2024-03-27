@@ -248,7 +248,7 @@ img {
   position: absolute;
   top: -10rem;
   left: 1rem;
-  line-height: rem;
+  line-height: 6rem;
   font-size: var(--biggest-font-size);
   background: var(--text-gradient);
   color: transparent;
