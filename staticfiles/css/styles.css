@@ -246,7 +246,7 @@ img {
 
 .home__title {
   position: absolute;
-  top: -4rem;
+  top: -6rem;
   left: 1rem;
   line-height: rem;
   font-size: var(--biggest-font-size);
