@@ -243,6 +243,7 @@ img {
 }
 
 .home__data {
+  /* padding-top: 5rem; */
   display: flex;
   flex-direction: column; 
   justify-content: center; 
@@ -702,7 +703,7 @@ img {
     left: 4rem;
   }
   .home__data {
-    padding-top: 8rem;
+    padding-top: 0rem;
   }
   .specs__img {
     width: 300px;
