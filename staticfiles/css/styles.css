@@ -11,7 +11,7 @@
   --text-color: hsl(var(--hue-color), 4%, 75%);
   --text-color-light: hsl(var(--hue-color), 4%, 65%);
   --white-color: #FFF;
-  --body-color: hsl(var(--hue-color), 4%, 6%);
+  --body-color: black;
   --container-color: hsl(var(--hue-color), 4%, 10%);
 
   --text-gradient: linear-gradient(
